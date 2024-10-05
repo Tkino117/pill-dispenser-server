@@ -4,6 +4,15 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+// How to make command
+// 1. Create a class that implements Cmd interface.
+// 2. register the command to registry in CLI() method.
+
+// How to run command
+// 1. make a new instance of CLI
+// 2. if you want to use CLI, call run() method
+// 3. if you want to execute a command, call execute() method
+
 public class CLI {
     private final CmdRegistry registry;
     public CLI() {
