@@ -15,6 +15,9 @@ public class Main {
                     String message = in.readLine();
                     System.out.println("Received message: " + message);
 
+                    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+                    out.println("Echo from server: " + message);
+
                     System.out.println("Closing connection");
                 }
             }
