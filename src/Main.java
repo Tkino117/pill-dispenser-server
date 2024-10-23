@@ -4,11 +4,12 @@ import java.io.*;
 public class Main {
     public static void main(String[] args) {
         int port = 8080;
-
+        次はコマンドとサーバーを複数スレッド化したい
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.println("Server is listening on port " + port);
             while (true) {
                 try (Socket clientSocket = serverSocket.accept()) {
+
                     System.out.println("Client connected: " + clientSocket.getInetAddress());
 
                     BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
