@@ -9,11 +9,13 @@ public class Main {
         Server server = new Server(port);
         Thread serverThread = new Thread(server);
         serverThread.start();
-        try {
-            Thread.sleep(10000);
-            server.sendMessage("Test message");
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+        while (true) {
+            try {
+                Thread.sleep(3000);
+                server.sendMessage("hello from main");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
