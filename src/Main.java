@@ -1,29 +1,18 @@
+import model.Server;
+
 import java.net.*;
 import java.io.*;
 
 public class Main {
     public static void main(String[] args) {
         int port = 8080;
-        次はコマンドとサーバーを複数スレッド化したい
-        try (ServerSocket serverSocket = new ServerSocket(port)) {
-            System.out.println("Server is listening on port " + port);
-            while (true) {
-                try (Socket clientSocket = serverSocket.accept()) {
-
-                    System.out.println("Client connected: " + clientSocket.getInetAddress());
-
-                    BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-                    String message = in.readLine();
-                    System.out.println("Received message: " + message);
-
-                    PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-                    out.println("Echo from server: " + message);
-
-                    System.out.println("Closing connection");
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Server exception: " + e.getMessage());
+        Server server = new Server(port);
+        Thread serverThread = new Thread(server);
+        serverThread.start();
+        try {
+            Thread.sleep(10000);
+            server.sendMessage("Test message");
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
