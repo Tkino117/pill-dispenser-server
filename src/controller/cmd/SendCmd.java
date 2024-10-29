@@ -12,6 +12,10 @@ public class SendCmd extends Cmd {
     @Override
     public void execute(List<String> args) {
         super.execute(args);
-        controller.sendMessage(args.get(0));
+        StringBuilder message = new StringBuilder();
+        for (String s : args) {
+            message.append(" ").append(s);
+        }
+        controller.sendMessage(message.toString());
     }
 }

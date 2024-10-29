@@ -23,4 +23,8 @@ public class Controller {
     public void sendMessage(String message) {
         server.sendMessage(message);
     }
-}
+    public void dispensePill(int pillId, int count) {
+        System.out.println("Dispensing pill " + pillId + " count " + count);
+        sendMessage("dispense " + pillId + " " + count);
+    }
+ }

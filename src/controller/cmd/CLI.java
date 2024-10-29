@@ -2,9 +2,7 @@ package controller.cmd;
 
 import controller.Controller;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 // How to make command
 // 1. Create a class that implements Cmd interface.
@@ -22,12 +20,16 @@ import java.util.Scanner;
 
 public class CLI implements Runnable {
     private final CmdRegistry registry;
+    public final Map<String, String> omissionMap;
     private volatile boolean running = true;
     public CLI(Controller controller) {
         registry = new CmdRegistry();
+        omissionMap = new HashMap<>();
         registry.registerCmd("test", new TestCmd("test", controller));
         registry.registerCmd("send", new SendCmd("send", controller));
+        registry.registerCmd("dispense", new DispenseCmd("dispense", controller));
         registry.registerCmd("exit", new ExitCmd("exit", controller));
+        omissionMap.put("dis", "dispense");
     }
     @Override
     public void run() {
@@ -35,9 +37,6 @@ public class CLI implements Runnable {
         Scanner scanner = new Scanner(System.in);
         while (running) {
             String input = scanner.nextLine();
-//            if (input.equals("exit") || input.startsWith("exit ")) {
-//                break;
-//            }
             execute(input);
         }
     }
@@ -47,6 +46,9 @@ public class CLI implements Runnable {
     public void execute(String input) {
         List<String> parts = Arrays.asList(input.split(" "));
         String name = parts.get(0);
+        if (omissionMap.containsKey(name)) {
+            name = omissionMap.get(name);
+        }
         List<String> args = parts.subList(1, parts.size());
         execute(name, args);
     }
