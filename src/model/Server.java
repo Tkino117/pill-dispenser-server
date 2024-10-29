@@ -32,7 +32,7 @@ public class Server implements Runnable{
     public void run() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             System.out.println("Server is listening on port " + port);
-            while (true) {
+            while (running) {
                 // 接続受け入れ
                 try (Socket clientSocket = serverSocket.accept()) {
                     System.out.println("Client connected: " + clientSocket.getInetAddress());
@@ -42,19 +42,15 @@ public class Server implements Runnable{
                     out = new PrintWriter(clientSocket.getOutputStream(), true);
 
                     // thread for receiving message
-                    Thread receiverThread = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            try {
-                                String message;
-                                while (running && (message = in.readLine()) != null) {
-                                    System.out.println("Received message : " + message);
-//                                    out.println("Echo from server: " + message);
-                                }
-                            } catch (IOException e) {
-                                System.out.println("Connection lost");
-                                e.printStackTrace();
+                    Thread receiverThread = new Thread(() -> {
+                        try {
+                            String message;
+                            while (running && (message = in.readLine()) != null) {
+                                System.out.println("Received message : " + message);
                             }
+                        } catch (IOException e) {
+                            System.out.println("Connection lost");
+//                            e.printStackTrace();
                         }
                     });
                     receiverThread.start();

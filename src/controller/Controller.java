@@ -15,6 +15,10 @@ public class Controller {
         serverThread.start();
         cliThread.start();
     }
+    public void stop() {
+        cli.stop();
+        server.stop();
+    }
 
     public void sendMessage(String message) {
         server.sendMessage(message);

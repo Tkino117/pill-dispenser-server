@@ -21,23 +21,23 @@ import java.util.Scanner;
 // 3. start the thread ( t.start() )
 
 public class CLI implements Runnable {
-    private final Controller controller;
     private final CmdRegistry registry;
+    private volatile boolean running = true;
     public CLI(Controller controller) {
-        this.controller = controller;
         registry = new CmdRegistry();
         registry.registerCmd("test", new TestCmd("test", controller));
         registry.registerCmd("send", new SendCmd("send", controller));
+        registry.registerCmd("exit", new ExitCmd("exit", controller));
     }
     @Override
     public void run() {
         System.out.println("CLI is running");
         Scanner scanner = new Scanner(System.in);
-        while (true) {
+        while (running) {
             String input = scanner.nextLine();
-            if (input.equals("exit") || input.startsWith("exit ")) {
-                break;
-            }
+//            if (input.equals("exit") || input.startsWith("exit ")) {
+//                break;
+//            }
             execute(input);
         }
     }
@@ -49,5 +49,8 @@ public class CLI implements Runnable {
         String name = parts.get(0);
         List<String> args = parts.subList(1, parts.size());
         execute(name, args);
+    }
+    public void stop() {
+        running = false;
     }
 }
