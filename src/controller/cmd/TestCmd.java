@@ -1,10 +1,9 @@
 package controller.cmd;
 
-import java.util.List;
+import controller.Controller;
 
-public class TestCmd implements Cmd{
-    @Override
-    public void execute(List<String> args) {
-        System.out.println("Test command executed with args: " + args);
+public class TestCmd extends Cmd {
+    public TestCmd(String name, Controller controller) {
+        super(name, controller);
     }
 }

@@ -1,5 +1,7 @@
 package controller.cmd;
 
+import controller.Controller;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -18,12 +20,14 @@ import java.util.Scanner;
 // 2. make a new thread with CLI instance ( Thread t = new Thread(cli) )
 // 3. start the thread ( t.start() )
 
-
 public class CLI implements Runnable {
+    private final Controller controller;
     private final CmdRegistry registry;
-    public CLI() {
+    public CLI(Controller controller) {
+        this.controller = controller;
         registry = new CmdRegistry();
-        registry.registerCmd("test", new TestCmd());
+        registry.registerCmd("test", new TestCmd("test", controller));
+        registry.registerCmd("send", new SendCmd("send", controller));
     }
     @Override
     public void run() {
@@ -45,11 +49,5 @@ public class CLI implements Runnable {
         String name = parts.get(0);
         List<String> args = parts.subList(1, parts.size());
         execute(name, args);
-    }
-
-
-    public static void main(String[] args) {
-        CLI cli = new CLI();
-        cli.run();
     }
 }

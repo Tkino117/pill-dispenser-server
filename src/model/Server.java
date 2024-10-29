@@ -1,5 +1,8 @@
 package model;
 
+import controller.Controller;
+import controller.cmd.CLI;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -9,10 +12,12 @@ import java.net.Socket;
 
 public class Server implements Runnable{
     private final int port;
+    private final CLI cli;
     private PrintWriter out;
     private volatile boolean running = true;
-    public Server(int port) {
+    public Server(int port, CLI cli) {
         this.port = port;
+        this.cli = cli;
     }
     public void sendMessage(String message) {
         if (out != null) {
