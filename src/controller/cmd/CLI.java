@@ -25,11 +25,16 @@ public class CLI implements Runnable {
     public CLI(Controller controller) {
         registry = new CmdRegistry();
         omissionMap = new HashMap<>();
+        // register commands here!
         registry.registerCmd("test", new TestCmd("test", controller));
         registry.registerCmd("send", new SendCmd("send", controller));
         registry.registerCmd("dispense", new DispenseCmd("dispense", controller));
         registry.registerCmd("exit", new ExitCmd("exit", controller));
+        registry.registerCmd("restart", new RestartCmd("restart", controller));
+        // register omissions here!
         omissionMap.put("dis", "dispense");
+        omissionMap.put("res", "restart");
+        omissionMap.put("q", "exit");
     }
     @Override
     public void run() {
