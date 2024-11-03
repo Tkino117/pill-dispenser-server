@@ -63,4 +63,5 @@ public class Controller {
             sendMessage("dispense " + (i + 1) + " " + pillSet.getCount(i + 1));
         }
     }
+    ここにアラームセットつくるよーん
  }
