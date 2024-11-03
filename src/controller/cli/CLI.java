@@ -33,6 +33,7 @@ public class CLI implements Runnable {
         registry.registerCmd("exit", new ExitCmd("exit", controller));
         registry.registerCmd("restart", new RestartCmd("restart", controller));
         registry.registerCmd("pillset", new PillSetCmd("pillset", controller));
+        registry.registerCmd("demo", new DemoCmd("demo", controller));
         // register omissions here!
         omissionMap.put("dis", "dispense");
         omissionMap.put("res", "restart");
