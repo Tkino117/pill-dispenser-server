@@ -32,6 +32,7 @@ public class CLI implements Runnable {
         registry.registerCmd("dispense", new DispenseCmd("dispense", controller));
         registry.registerCmd("exit", new ExitCmd("exit", controller));
         registry.registerCmd("restart", new RestartCmd("restart", controller));
+        registry.registerCmd("pillset", new PillSetCmd("pillset", controller));
         // register omissions here!
         omissionMap.put("dis", "dispense");
         omissionMap.put("res", "restart");
@@ -43,6 +44,9 @@ public class CLI implements Runnable {
         Scanner scanner = new Scanner(System.in);
         while (running) {
             String input = scanner.nextLine();
+            if (input.matches("") || input.matches(" +")) {
+                continue;
+            }
             execute(input);
         }
     }

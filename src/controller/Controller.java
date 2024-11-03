@@ -2,6 +2,9 @@ package controller;
 
 import controller.cli.CLI;
 import model.Server;
+import model.data.PillSet;
+
+import static model.data.PillSets.PILL_SETS;
 
 public class Controller {
     public int port;
@@ -46,6 +49,16 @@ public class Controller {
     public void dispensePill(int pillId, int count) {
         System.out.println("Dispensing pill " + pillId + " count " + count);
         sendMessage("dispense " + pillId + " " + count);
-        sendMessage("dispense " + pillId + " " + count);
+    }
+    public void dispensePillSet(String pillSetId) {
+        PillSet pillSet = PILL_SETS.get(pillSetId);
+        if (pillSet == null) {
+            System.out.println("ERROR : Pill set not found.");
+            return;
+        }
+        System.out.println("Dispensing pill set " + pillSetId);
+        for (int i = 0; i < pillSet.COUNT; i++) {
+            sendMessage("dispense " + (i + 1) + " " + pillSet.getCount(i + 1));
+        }
     }
  }
