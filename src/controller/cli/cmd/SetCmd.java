@@ -1,16 +1,18 @@
-package controller.cmd;
+package controller.cli.cmd;
 
 import controller.Controller;
 
 import java.util.List;
 
-public class DispenseCmd extends Cmd {
-    public DispenseCmd(String name, Controller controller) {
+public class SetCmd extends Cmd {
+    public SetCmd(String name, Controller controller) {
         super(name, controller);
     }
 
     @Override
     public void execute(List<String> args) {
+        //
+        super.execute(args);
         if (args.size() != 2) {
             System.out.println("ERROR : Invalid arguments.");
             System.out.println("Usage : dispense <id> <count>");
@@ -25,7 +27,6 @@ public class DispenseCmd extends Cmd {
             System.out.println("Usage : dispense <id> <count>");
             return;
         }
-        super.execute(args);
-        controller.dispensePill(id, count);
+
     }
 }

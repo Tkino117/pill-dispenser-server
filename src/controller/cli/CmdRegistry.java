@@ -1,4 +1,6 @@
-package controller.cmd;
+package controller.cli;
+
+import controller.cli.cmd.ICmd;
 
 import java.util.HashMap;
 import java.util.List;

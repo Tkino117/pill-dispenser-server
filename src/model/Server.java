@@ -1,7 +1,6 @@
 package model;
 
-import controller.Controller;
-import controller.cmd.CLI;
+import controller.cli.CLI;
 
 import java.io.BufferedReader;
 import java.io.IOException;

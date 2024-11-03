@@ -1,4 +1,4 @@
-package controller.cmd;
+package controller.cli.cmd;
 
 import controller.Controller;
 

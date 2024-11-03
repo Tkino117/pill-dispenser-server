@@ -1,6 +1,6 @@
 package controller;
 
-import controller.cmd.CLI;
+import controller.cli.CLI;
 import model.Server;
 
 public class Controller {

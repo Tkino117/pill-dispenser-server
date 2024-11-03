@@ -1,6 +1,7 @@
-package controller.cmd;
+package controller.cli;
 
 import controller.Controller;
+import controller.cli.cmd.*;
 
 import java.util.*;
 
