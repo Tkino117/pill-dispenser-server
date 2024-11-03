@@ -21,6 +21,7 @@ public class Controller {
         cliThread.start();
     }
 
+    // for server
     public void serverRestart(int port) {
         this.port = port;
         server.stop();
@@ -43,6 +44,7 @@ public class Controller {
         server.stop();
     }
 
+    // controller
     public void sendMessage(String message) {
         server.sendMessage(message);
     }
