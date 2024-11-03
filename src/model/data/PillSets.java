@@ -20,6 +20,10 @@ public class PillSets {
             System.out.println("ERROR : Invalid character in ID.");
             return;
         }
+        else if (PILL_SETS.containsKey(id)) {
+            System.out.println("ERROR : ID already exists.");
+            return;
+        }
         PILL_SETS.put(id, new PillSet());
     }
     public static void editPillSet(String id, int pillId, int count) {
