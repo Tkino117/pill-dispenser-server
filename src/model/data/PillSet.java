@@ -3,11 +3,11 @@ package model.data;
 import java.util.HashMap;
 
 public class PillSet {
-    public final int COUNT = 3;
+    public final int PILLCOUNT = 3;
     private final HashMap<Integer, Integer> pills;  // id, count (id = 1, 2, 3)
     public PillSet() {
         pills = new HashMap<>();
-        for (int i = 0; i < COUNT; i++) {
+        for (int i = 0; i < PILLCOUNT; i++) {
             pills.put(i + 1, 0);
         }
     }

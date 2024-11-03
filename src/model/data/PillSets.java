@@ -44,7 +44,7 @@ public class PillSets {
         for (String id : PILL_SETS.keySet()) {
             System.out.println(id);
             PillSet pillSet = PILL_SETS.get(id);
-            for (int i = 1; i <= pillSet.COUNT; i++) {
+            for (int i = 1; i <= pillSet.PILLCOUNT; i++) {
                 System.out.println(" pill  " + i + " : " + pillSet.getCount(i));
             }
         }

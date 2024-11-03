@@ -1,6 +1,7 @@
 package controller;
 
 import controller.cli.CLI;
+import model.AlarmManager;
 import model.Server;
 import model.data.PillSet;
 
@@ -10,6 +11,7 @@ public class Controller {
     public int port;
     public Server server;
     public final CLI cli;
+    public final AlarmManager alarm;
     public Controller(int port) {
         System.out.println("Controller created");
         this.port = port;
@@ -19,6 +21,7 @@ public class Controller {
         Thread cliThread = new Thread(cli);
         serverThread.start();
         cliThread.start();
+        alarm = new AlarmManager(this);
     }
 
     // for server
@@ -59,9 +62,8 @@ public class Controller {
             return;
         }
         System.out.println("Dispensing pill set " + pillSetId);
-        for (int i = 0; i < pillSet.COUNT; i++) {
+        for (int i = 0; i < pillSet.PILLCOUNT; i++) {
             sendMessage("dispense " + (i + 1) + " " + pillSet.getCount(i + 1));
         }
     }
-    ここにアラームセットつくるよーん
  }
