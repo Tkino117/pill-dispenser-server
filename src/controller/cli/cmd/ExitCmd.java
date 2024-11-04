@@ -9,8 +9,10 @@ public class ExitCmd extends Cmd {
         super(name, controller);
     }
 
+    // exit
     @Override
     public void execute(List<String> args) {
+        super.execute(args);
         System.out.println("Exiting...");
         controller.stop();
     }

@@ -9,6 +9,7 @@ public class SendCmd extends Cmd {
         super(name, controller);
     }
 
+    // send <message>
     @Override
     public void execute(List<String> args) {
         super.execute(args);

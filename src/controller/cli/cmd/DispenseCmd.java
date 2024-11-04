@@ -9,6 +9,8 @@ public class DispenseCmd extends Cmd {
         super(name, controller);
     }
 
+    // dispense <pillset>
+    // dispense <id> <count>
     @Override
     public void execute(List<String> args) {
         super.execute(args);

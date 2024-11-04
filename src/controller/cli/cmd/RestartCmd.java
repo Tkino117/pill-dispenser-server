@@ -9,8 +9,11 @@ public class RestartCmd extends Cmd {
         super(name, controller);
     }
 
+    // restart
+    // restart <port>
     @Override
     public void execute(List<String> args) {
+        super.execute(args);
         System.out.println("Server Restarting...");
         if (!args.isEmpty()) {
             controller.model.server.serverRestart(Integer.parseInt(args.get(0)));

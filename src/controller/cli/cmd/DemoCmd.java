@@ -10,10 +10,14 @@ public class DemoCmd extends Cmd {
         super(name, controller);
     }
 
+    // demo
+    // demo sch
+    // demo debug
     @Override
     public void execute(List<String> args) {
         super.execute(args);
         if (args.isEmpty()) {
+            System.out.println("made demo pillset");
             controller.cli.execute("pillset add morning");
             controller.cli.execute("pillset add afternoon");
             controller.cli.execute("pillset add evening");
@@ -25,6 +29,7 @@ public class DemoCmd extends Cmd {
             controller.cli.execute("pillset edit evening 3 1");
         }
         else if (Objects.equals(args.get(0), "sch") || Objects.equals(args.get(0), "schedule")) {
+            System.out.println("made demo schedule");
             controller.cli.execute("schedule once s_morning morning 60");
             controller.cli.execute("schedule repeat sr_morning morning 2 30");
             controller.cli.execute("schedule repeat sr_afternoon afternoon 12 30");

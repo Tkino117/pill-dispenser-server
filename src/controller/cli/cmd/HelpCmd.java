@@ -4,15 +4,15 @@ import controller.Controller;
 
 import java.util.List;
 
-public class TakeCmd extends Cmd {
-    public TakeCmd(String name, Controller controller) {
+public class HelpCmd extends Cmd {
+    public HelpCmd(String name, Controller controller) {
         super(name, controller);
     }
 
-    // take
+    // help
     @Override
     public void execute(List<String> args) {
         super.execute(args);
-        controller.model.server.executeMessage("take pill");
+        System.out.println("一覧があるので notion をみてね");
     }
 }
