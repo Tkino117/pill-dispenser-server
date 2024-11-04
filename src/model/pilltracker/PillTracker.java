@@ -27,7 +27,8 @@ public class PillTracker {
         return res;
     }
     public void takePill() {
-        history.add(getAndClear());
+        if (!lastPill.isEmpty())
+            history.add(getAndClear());
     }
     public void takePill(LocalDateTime time) {
         history.add(time, getAndClear());

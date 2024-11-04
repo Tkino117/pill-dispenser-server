@@ -20,7 +20,7 @@ public class Model {
         pillSets = new PillSets();
         history = new PillHistory();
         pillTracker = new PillTracker(history);
-        server = new ServerManager(port, pillSets, pillTracker);
+        server = new ServerManager(port, pillSets, pillTracker, this);
         alarm = new AlarmManager(server);
     }
     public void stop() {

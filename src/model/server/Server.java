@@ -11,10 +11,12 @@ import java.net.Socket;
 
 public class Server implements Runnable{
     private final int port;
+    private final ServerManager manager;
     private PrintWriter out;
     private volatile boolean running = true;
-    public Server(int port) {
+    public Server(int port, ServerManager manager) {
         this.port = port;
+        this.manager = manager;
     }
     public void sendMessage(String message) {
         if (out != null) {
@@ -44,6 +46,7 @@ public class Server implements Runnable{
                             String message;
                             while (running && (message = in.readLine()) != null) {
                                 System.out.println("Received message : " + message);
+                                manager.executeMessage(message);
                             }
                         } catch (IOException e) {
                             System.out.println("Connection lost");

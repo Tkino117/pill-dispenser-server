@@ -12,6 +12,6 @@ public class TakeCmd extends Cmd {
     @Override
     public void execute(List<String> args) {
         super.execute(args);
-        controller.model.pillTracker.takePill();
+        controller.model.server.executeMessage("take pill");
     }
 }

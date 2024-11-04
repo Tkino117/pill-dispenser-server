@@ -1,5 +1,6 @@
 package model.server;
 
+import model.Model;
 import model.data.PillSet;
 import model.data.PillSets;
 import model.pilltracker.PillTracker;
@@ -9,11 +10,13 @@ public class ServerManager {
     private Server server;
     private final PillSets pillSets;
     private final PillTracker pillTracker;
-    public ServerManager(int port, PillSets pillSets, PillTracker pillTracker) {
+    private final MessageExecutor executor;
+    public ServerManager(int port, PillSets pillSets, PillTracker pillTracker, Model model) {
         this.port = port;
         this.pillSets = pillSets;
         this.pillTracker = pillTracker;
-        server = new Server(port);
+        executor = new MessageExecutor(model);
+        server = new Server(port, this);
         Thread serverThread = new Thread(server);
         serverThread.start();
     }
@@ -28,7 +31,7 @@ public class ServerManager {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        server = new Server(port);
+        server = new Server(port, this);
         Thread serverThread = new Thread(server);
         serverThread.start();
     }
@@ -63,5 +66,8 @@ public class ServerManager {
             return;
         }
         dispensePillSet(pillSet);
+    }
+    public void executeMessage(String message) {
+        executor.execute(message);
     }
 }
