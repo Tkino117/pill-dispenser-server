@@ -32,10 +32,12 @@ public class CLI implements Runnable {
         registry.registerCmd("demo", new DemoCmd("demo", controller));
         registry.registerCmd("dispense", new DispenseCmd("dispense", controller));
         registry.registerCmd("exit", new ExitCmd("exit", controller));
+        registry.registerCmd("history", new HistoryCmd("history", controller));
         registry.registerCmd("pillset", new PillSetCmd("pillset", controller));
         registry.registerCmd("restart", new RestartCmd("restart", controller));
         registry.registerCmd("schedule", new ScheduleCmd("schedule", controller));
         registry.registerCmd("send", new SendCmd("send", controller));
+        registry.registerCmd("take", new TakeCmd("take", controller));
         registry.registerCmd("test", new TestCmd("test", controller));
         registry.registerCmd("track", new TrackCmd("track", controller));
         // register omissions here!
