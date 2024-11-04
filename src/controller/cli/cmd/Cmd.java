@@ -1,6 +1,7 @@
 package controller.cli.cmd;
 
 import controller.Controller;
+import model.Model;
 
 import java.util.List;
 

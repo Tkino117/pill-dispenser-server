@@ -13,7 +13,7 @@ public class DispenseCmd extends Cmd {
     public void execute(List<String> args) {
         super.execute(args);
         if (args.size() == 1) {
-            controller.dispensePillSet(args.get(0));
+            controller.model.server.dispensePillSet(args.get(0));
             return;
         }
         if (args.size() == 2) {
@@ -26,7 +26,7 @@ public class DispenseCmd extends Cmd {
                 System.out.println("Usage : dispense <id> <count>");
                 return;
             }
-            controller.dispensePill(id, count);
+            controller.model.server.dispensePill(id, count);
             return;
         }
         System.out.println("ERROR : Invalid arguments.");

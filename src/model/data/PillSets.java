@@ -3,15 +3,12 @@ package model.data;
 import java.util.HashMap;
 
 public class PillSets {
-    public static final HashMap<String, PillSet> PILL_SETS;
-    static {
-        PILL_SETS = new HashMap<>();
-    }
-    public static PillSet getPillSet(String id) {
-        return PILL_SETS.get(id);
+    public final HashMap<String, PillSet> pillSets;
+    public PillSets() {
+        pillSets = new HashMap<>();
     }
     // !note! id が被ったとき確かめなくてよい？？
-    public static void newPillSet(String id) {
+    public void newPillSet(String id) {
         if (id.matches("[0-9]+")) {
             System.out.println("ERROR : ID cannot consist of numbers only.");
             return;
@@ -20,30 +17,33 @@ public class PillSets {
             System.out.println("ERROR : Invalid character in ID.");
             return;
         }
-        else if (PILL_SETS.containsKey(id)) {
+        else if (pillSets.containsKey(id)) {
             System.out.println("ERROR : ID already exists.");
             return;
         }
-        PILL_SETS.put(id, new PillSet(id));
+        pillSets.put(id, new PillSet(id));
     }
-    public static void editPillSet(String id, int pillId, int count) {
-        PillSet pillSet = PILL_SETS.get(id);
+    public PillSet getPillSet(String id) {
+        return pillSets.get(id);
+    }
+    public void editPillSet(String id, int pillId, int count) {
+        PillSet pillSet = pillSets.get(id);
         if (pillSet == null) {
             System.out.println("ERROR : No such pill set.");
             return;
         }
         pillSet.setCount(pillId, count);
     }
-    public static void removePillSet(String id) {
-        PillSet check = PILL_SETS.remove(id);
+    public void removePillSet(String id) {
+        PillSet check = pillSets.remove(id);
         if (check == null) {
             System.out.println("ERROR : No such pill set.");
         }
     }
-    public static void printPillSets() {
-        for (String id : PILL_SETS.keySet()) {
+    public void printPillSets() {
+        for (String id : pillSets.keySet()) {
             System.out.println(id);
-            PillSet pillSet = PILL_SETS.get(id);
+            PillSet pillSet = pillSets.get(id);
             for (int i = 1; i <= pillSet.PILLCOUNT; i++) {
                 System.out.println(" pill  " + i + " : " + pillSet.getCount(i));
             }

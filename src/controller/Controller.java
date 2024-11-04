@@ -1,74 +1,31 @@
 package controller;
 
 import controller.cli.CLI;
-import model.AlarmManager;
-import model.Server;
-import model.data.PillSet;
-
-import static model.data.PillSets.PILL_SETS;
+import model.Model;
 
 public class Controller {
     public int port;
-    public Server server;
     public final CLI cli;
-    public final AlarmManager alarm;
+    public final Model model;
     public Controller(int port) {
         System.out.println("Controller created");
         this.port = port;
         cli = new CLI(this);
-        server = new Server(port, cli);
-        Thread serverThread = new Thread(server);
+        model = new Model(port, this);
         Thread cliThread = new Thread(cli);
-        serverThread.start();
         cliThread.start();
-        alarm = new AlarmManager(this);
     }
 
-    // for server
-    public void serverRestart(int port) {
-        this.port = port;
-        server.stop();
+
+
+    public void stop() {
+        cli.stop();
+        model.stop();
         try {
-            Thread.sleep(500);
-            System.out.println("wait...");
-            Thread.sleep(2500);
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        server = new Server(port, cli);
-        Thread serverThread = new Thread(server);
-        serverThread.start();
-    }
-    public void serverRestart() {
-        serverRestart(port);
-    }
-    public void stop() {
-        cli.stop();
-        server.stop();
-        alarm.shutdown();
         System.exit(0);
-    }
-
-    // controller
-    public void sendMessage(String message) {
-        server.sendMessage(message);
-    }
-    public void dispensePill(int pillId, int count) {
-        System.out.println("Dispensing pill " + pillId + " count " + count);
-        sendMessage("dispense " + pillId + " " + count);
-    }
-    public void dispensePillSet(String pillSetId) {
-        PillSet pillSet = PILL_SETS.get(pillSetId);
-        if (pillSet == null) {
-            System.out.println("ERROR : Pill set not found.");
-            return;
-        }
-        dispensePillSet(pillSet);
-    }
-    public void dispensePillSet(PillSet pillSet) {
-        System.out.println("Dispensing pill set : " + pillSet.getId());
-        for (int i = 0; i < pillSet.PILLCOUNT; i++) {
-            sendMessage("dispense " + (i + 1) + " " + pillSet.getCount(i + 1));
-        }
     }
  }

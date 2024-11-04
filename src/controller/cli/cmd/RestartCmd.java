@@ -13,9 +13,9 @@ public class RestartCmd extends Cmd {
     public void execute(List<String> args) {
         System.out.println("Server Restarting...");
         if (!args.isEmpty()) {
-            controller.serverRestart(Integer.parseInt(args.get(0)));
+            controller.model.server.serverRestart(Integer.parseInt(args.get(0)));
             return;
         }
-        controller.serverRestart();
+        controller.model.server.serverRestart();
     }
 }

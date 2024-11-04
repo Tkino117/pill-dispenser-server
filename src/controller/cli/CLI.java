@@ -23,7 +23,9 @@ public class CLI implements Runnable {
     private final CmdRegistry registry;
     public final Map<String, String> omissionMap;
     private volatile boolean running = true;
+    public final Scanner scanner;
     public CLI(Controller controller) {
+        scanner = new Scanner(System.in);
         registry = new CmdRegistry();
         omissionMap = new HashMap<>();
         // register commands here!
@@ -44,7 +46,6 @@ public class CLI implements Runnable {
     @Override
     public void run() {
         System.out.println("CLI is running");
-        Scanner scanner = new Scanner(System.in);
         while (running) {
             String input = scanner.nextLine();
             if (input.matches("") || input.matches(" +")) {

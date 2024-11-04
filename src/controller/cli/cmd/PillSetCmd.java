@@ -20,12 +20,12 @@ public class PillSetCmd extends Cmd {
         super.execute(args);
         boolean err = false;
         if (args.isEmpty()) {
-            PillSets.printPillSets();
+            controller.model.pillSets.printPillSets();
             return;
         }
         if (Objects.equals(args.get(0), "add")) {
             if (args.size() == 2) {
-                PillSets.newPillSet(args.get(1));
+                controller.model.pillSets.newPillSet(args.get(1));
             } else {
                 err = true;
             }
@@ -36,7 +36,7 @@ public class PillSetCmd extends Cmd {
                 try {
                     id = Integer.parseInt(args.get(2));
                     count = Integer.parseInt(args.get(3));
-                    PillSets.editPillSet(args.get(1), id, count);
+                    controller.model.pillSets.editPillSet(args.get(1), id, count);
                 } catch (NumberFormatException e) {
                     err = true;
                 }
@@ -46,7 +46,7 @@ public class PillSetCmd extends Cmd {
         }
         if (Objects.equals(args.get(0), "remove")) {
             if (args.size() == 2) {
-                PillSets.removePillSet(args.get(1));
+                controller.model.pillSets.removePillSet(args.get(1));
             } else {
                 err = true;
             }

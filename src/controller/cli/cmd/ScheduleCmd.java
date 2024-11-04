@@ -6,8 +6,6 @@ import model.data.PillSet;
 import java.util.List;
 import java.util.Objects;
 
-import static model.data.PillSets.PILL_SETS;
-
 public class ScheduleCmd extends Cmd {
     public ScheduleCmd(String name, Controller controller) {
         super(name, controller);
@@ -23,7 +21,7 @@ public class ScheduleCmd extends Cmd {
         super.execute(args);
         boolean err = false;
         if (args.isEmpty()) {
-            controller.alarm.printTasks();
+            controller.model.alarm.printTasks();
         }
         else if (Objects.equals(args.get(0), "once")) {
             if (args.size() == 4) {
@@ -31,12 +29,13 @@ public class ScheduleCmd extends Cmd {
                     String id = args.get(1);
                     String pillSetId = args.get(2);
                     long delay = Long.parseLong(args.get(3));
-                    PillSet pillSet = PILL_SETS.get(pillSetId);
+                    PillSet pillSet = controller.model.pillSets.getPillSet(pillSetId);
                     if (pillSet == null) {
                         System.out.println("ERROR : No such pillset. id : " + pillSetId);
                         return;
                     }
-                    controller.alarm.scheduleOneTask(id, controller.alarm.toTask(pillSet), delay);
+                    // !note!ここあとで
+                    controller.model.alarm.scheduleOneTask(id, controller.model.alarm.toTask(pillSet), delay);
                 } catch (NumberFormatException e) {
                     err = true;
                 }
@@ -51,12 +50,12 @@ public class ScheduleCmd extends Cmd {
                     String pillSetId = args.get(2);
                     long delay = Long.parseLong(args.get(3));
                     long interval = Long.parseLong(args.get(4));
-                    PillSet pillSet = PILL_SETS.get(pillSetId);
+                    PillSet pillSet = controller.model.pillSets.getPillSet(pillSetId);
                     if (pillSet == null) {
                         System.out.println("ERROR : No such pillset. id : " + pillSetId);
                         return;
                     }
-                    controller.alarm.schedulePeriodicTask(id, controller.alarm.toTask(pillSet), delay, interval);
+                    controller.model.alarm.schedulePeriodicTask(id, controller.model.alarm.toTask(pillSet), delay, interval);
                 } catch (NumberFormatException e) {
                     err = true;
                 }
@@ -71,12 +70,12 @@ public class ScheduleCmd extends Cmd {
                     String id = args.get(2);
                     String pillSetId = args.get(3);
                     long delay = Long.parseLong(args.get(4));
-                    PillSet pillSet = PILL_SETS.get(pillSetId);
+                    PillSet pillSet = controller.model.pillSets.getPillSet(pillSetId);
                     if (pillSet == null) {
                         System.out.println("ERROR : No such pillset. id : " + pillSetId);
                         return;
                     }
-                    controller.alarm.rescheduleOneTask(id, controller.alarm.toTask(pillSet), delay);
+                    controller.model.alarm.rescheduleOneTask(id, controller.model.alarm.toTask(pillSet), delay);
                 } catch (NumberFormatException e) {
                     err = true;
                 }
@@ -91,12 +90,12 @@ public class ScheduleCmd extends Cmd {
                     String pillSetId = args.get(3);
                     long delay = Long.parseLong(args.get(4));
                     long interval = Long.parseLong(args.get(5));
-                    PillSet pillSet = PILL_SETS.get(pillSetId);
+                    PillSet pillSet = controller.model.pillSets.getPillSet(pillSetId);
                     if (pillSet == null) {
                         System.out.println("ERROR : No such pillset. id : " + pillSetId);
                         return;
                     }
-                    controller.alarm.reschedulePeriodicTask(id, controller.alarm.toTask(pillSet), delay, interval);
+                    controller.model.alarm.reschedulePeriodicTask(id, controller.model.alarm.toTask(pillSet), delay, interval);
                 } catch (NumberFormatException e) {
                     err = true;
                 }
@@ -106,7 +105,7 @@ public class ScheduleCmd extends Cmd {
         }
         else if (Objects.equals(args.get(0), "remove")) {
             if (args.size() == 2) {
-                controller.alarm.cancelTask(args.get(1));
+                controller.model.alarm.cancelTask(args.get(1));
             } else {
                 err = true;
             }

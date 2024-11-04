@@ -1,4 +1,4 @@
-package model;
+package model.server;
 
 import controller.cli.CLI;
 
@@ -11,12 +11,10 @@ import java.net.Socket;
 
 public class Server implements Runnable{
     private final int port;
-    private final CLI cli;
     private PrintWriter out;
     private volatile boolean running = true;
-    public Server(int port, CLI cli) {
+    public Server(int port) {
         this.port = port;
-        this.cli = cli;
     }
     public void sendMessage(String message) {
         if (out != null) {

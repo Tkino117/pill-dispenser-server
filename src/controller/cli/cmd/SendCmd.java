@@ -16,6 +16,6 @@ public class SendCmd extends Cmd {
         for (String s : args) {
             message.append(" ").append(s);
         }
-        controller.sendMessage(message.toString());
+        controller.model.server.sendMessage(message.toString());
     }
 }
