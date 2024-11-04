@@ -27,17 +27,19 @@ public class CLI implements Runnable {
         registry = new CmdRegistry();
         omissionMap = new HashMap<>();
         // register commands here!
-        registry.registerCmd("test", new TestCmd("test", controller));
-        registry.registerCmd("send", new SendCmd("send", controller));
+        registry.registerCmd("demo", new DemoCmd("demo", controller));
         registry.registerCmd("dispense", new DispenseCmd("dispense", controller));
         registry.registerCmd("exit", new ExitCmd("exit", controller));
-        registry.registerCmd("restart", new RestartCmd("restart", controller));
         registry.registerCmd("pillset", new PillSetCmd("pillset", controller));
-        registry.registerCmd("demo", new DemoCmd("demo", controller));
+        registry.registerCmd("restart", new RestartCmd("restart", controller));
+        registry.registerCmd("schedule", new ScheduleCmd("schedule", controller));
+        registry.registerCmd("send", new SendCmd("send", controller));
+        registry.registerCmd("test", new TestCmd("test", controller));
         // register omissions here!
         omissionMap.put("dis", "dispense");
-        omissionMap.put("res", "restart");
         omissionMap.put("q", "exit");
+        omissionMap.put("res", "restart");
+        omissionMap.put("sch", "schedule");
     }
     @Override
     public void run() {

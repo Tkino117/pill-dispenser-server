@@ -45,6 +45,8 @@ public class Controller {
     public void stop() {
         cli.stop();
         server.stop();
+        alarm.shutdown();
+        System.exit(0);
     }
 
     // controller
@@ -61,7 +63,10 @@ public class Controller {
             System.out.println("ERROR : Pill set not found.");
             return;
         }
-        System.out.println("Dispensing pill set " + pillSetId);
+        dispensePillSet(pillSet);
+    }
+    public void dispensePillSet(PillSet pillSet) {
+        System.out.println("Dispensing pill set : " + pillSet.getId());
         for (int i = 0; i < pillSet.PILLCOUNT; i++) {
             sendMessage("dispense " + (i + 1) + " " + pillSet.getCount(i + 1));
         }

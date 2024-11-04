@@ -4,9 +4,11 @@ import java.util.HashMap;
 
 public class PillSet {
     public final int PILLCOUNT = 3;
+    private final String id;
     private final HashMap<Integer, Integer> pills;  // id, count (id = 1, 2, 3)
-    public PillSet() {
+    public PillSet(String pillSetId) {
         pills = new HashMap<>();
+        id = pillSetId;
         for (int i = 0; i < PILLCOUNT; i++) {
             pills.put(i + 1, 0);
         }
@@ -28,5 +30,8 @@ public class PillSet {
             return;
         }
         pills.put(id, count);
+    }
+    public String getId() {
+        return id;
     }
 }

@@ -24,7 +24,7 @@ public class PillSets {
             System.out.println("ERROR : ID already exists.");
             return;
         }
-        PILL_SETS.put(id, new PillSet());
+        PILL_SETS.put(id, new PillSet(id));
     }
     public static void editPillSet(String id, int pillId, int count) {
         PillSet pillSet = PILL_SETS.get(id);

@@ -29,7 +29,11 @@ public class AlarmManager {
             System.out.println("ERROR : Already scheduled task. id : " + id);
             return;
         }
-        ScheduledFuture<?> future = scheduler.schedule(task, delay_sec, java.util.concurrent.TimeUnit.SECONDS);
+        Runnable taskWrapper = () -> {
+            task.run();
+            tasks.remove(id);
+        };
+        ScheduledFuture<?> future = scheduler.schedule(taskWrapper, delay_sec, java.util.concurrent.TimeUnit.SECONDS);
         tasks.put(id, future);
     }
     public void scheduleOneTask(String id, Runnable task, LocalDateTime executeTime) {
@@ -78,9 +82,9 @@ public class AlarmManager {
         System.out.println("ERROR : No such task. id : " + id);
     }
 
-    public Runnable toTask(String pillSetId) {
+    public Runnable toTask(PillSet pillSet) {
         return () -> {
-            controller.dispensePillSet(pillSetId);
+            controller.dispensePillSet(pillSet);
         };
     }
     public boolean cancelTask(String id) {
@@ -95,5 +99,11 @@ public class AlarmManager {
     }
     public void shutdown() {
         scheduler.shutdown();
+    }
+    public void printTasks() {
+        System.out.println("Scheduled tasks : ");
+        for (String id : tasks.keySet()) {
+            System.out.println("id : " + id + " : " + tasks.get(id).getDelay(java.util.concurrent.TimeUnit.SECONDS) + " sec");
+        }
     }
 }
