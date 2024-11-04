@@ -10,17 +10,15 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 
-import static model.data.PillSets.PILL_SETS;
-
 public class AlarmManager {
     private final ScheduledExecutorService scheduler;
     private final ConcurrentHashMap<String, ScheduledFuture<?>> tasks;
-    private final Controller controller;
+    private final ServerManager server;
 
-    public AlarmManager(Controller controller) {
+    public AlarmManager(ServerManager server) {
         this.scheduler = Executors.newScheduledThreadPool(1);
         this.tasks = new ConcurrentHashMap<>();
-        this.controller = controller;
+        this.server = server;
     }
 
     // one time task
@@ -84,7 +82,7 @@ public class AlarmManager {
 
     public Runnable toTask(PillSet pillSet) {
         return () -> {
-            controller.dispensePillSet(pillSet);
+            server.dispensePillSet(pillSet);
         };
     }
     public boolean cancelTask(String id) {
