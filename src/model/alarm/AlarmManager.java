@@ -1,8 +1,7 @@
-package model;
+package model.alarm;
 
-import controller.Controller;
 import model.data.PillSet;
-import model.data.PillSets;
+import model.server.ServerManager;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.ConcurrentHashMap;

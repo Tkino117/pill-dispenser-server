@@ -1,6 +1,5 @@
-package model;
+package model.server;
 
-import controller.Controller;
 import model.data.PillSet;
 import model.data.PillSets;
 

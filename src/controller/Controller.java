@@ -1,11 +1,7 @@
 package controller;
 
 import controller.cli.CLI;
-import model.AlarmManager;
 import model.Model;
-import model.Server;
-import model.data.PillSet;
-import model.data.PillSets;
 
 public class Controller {
     public int port;

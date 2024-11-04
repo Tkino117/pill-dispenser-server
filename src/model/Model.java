@@ -1,7 +1,9 @@
 package model;
 
 import controller.Controller;
+import model.alarm.AlarmManager;
 import model.data.PillSets;
+import model.server.ServerManager;
 
 public class Model {
     private final Controller controller;
