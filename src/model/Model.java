@@ -3,6 +3,7 @@ package model;
 import controller.Controller;
 import model.alarm.AlarmManager;
 import model.data.PillSets;
+import model.pilltracking.PillTrackingManager;
 import model.server.ServerManager;
 
 public class Model {
@@ -10,11 +11,13 @@ public class Model {
     public final PillSets pillSets;
     public final ServerManager server;
     public final AlarmManager alarm;
+    public final PillTrackingManager pillTracker;
     public Model(int port, Controller controller) {
         System.out.println("Model created");
         this.controller = controller;
         pillSets = new PillSets();
-        server = new ServerManager(port, pillSets);
+        pillTracker = new PillTrackingManager();
+        server = new ServerManager(port, pillSets, pillTracker);
         alarm = new AlarmManager(server);
     }
     public void stop() {

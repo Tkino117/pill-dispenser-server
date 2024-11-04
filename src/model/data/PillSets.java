@@ -42,11 +42,7 @@ public class PillSets {
     }
     public void printPillSets() {
         for (String id : pillSets.keySet()) {
-            System.out.println(id);
-            PillSet pillSet = pillSets.get(id);
-            for (int i = 1; i <= pillSet.PILLCOUNT; i++) {
-                System.out.println(" pill  " + i + " : " + pillSet.getCount(i));
-            }
+            pillSets.get(id).printPillSet();
         }
     }
 }

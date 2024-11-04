@@ -2,14 +2,17 @@ package model.server;
 
 import model.data.PillSet;
 import model.data.PillSets;
+import model.pilltracking.PillTrackingManager;
 
 public class ServerManager {
     private int port;
     private Server server;
-    private PillSets pillSets;
-    public ServerManager(int port, PillSets pillSets) {
+    private final PillSets pillSets;
+    private final PillTrackingManager pillTracker;
+    public ServerManager(int port, PillSets pillSets, PillTrackingManager pillTracker) {
         this.port = port;
         this.pillSets = pillSets;
+        this.pillTracker = pillTracker;
         server = new Server(port);
         Thread serverThread = new Thread(server);
         serverThread.start();
@@ -38,9 +41,20 @@ public class ServerManager {
     public void sendMessage(String message) {
         server.sendMessage(message);
     }
-    public void dispensePill(int pillId, int count) {
-        System.out.println("Dispensing pill " + pillId + " count " + count);
+    public void dispensePill(int pillId, int count, boolean showMessage) {
+        if (showMessage)
+            System.out.println("Dispensing pill " + pillId + " count " + count);
         sendMessage("dispense " + pillId + " " + count);
+        pillTracker.add(pillId, count);
+    }
+    public void dispensePill(int pillId, int count) {
+        dispensePill(pillId, count, true);
+    }
+    public void dispensePillSet(PillSet pillSet) {
+        System.out.println("Dispensing pill set : " + pillSet.getId());
+        for (int i = 0; i < pillSet.PILLCOUNT; i++) {
+            dispensePill(i + 1, pillSet.getCount(i + 1), false);
+        }
     }
     public void dispensePillSet(String pillSetId) {
         PillSet pillSet = pillSets.getPillSet(pillSetId);
@@ -49,11 +63,5 @@ public class ServerManager {
             return;
         }
         dispensePillSet(pillSet);
-    }
-    public void dispensePillSet(PillSet pillSet) {
-        System.out.println("Dispensing pill set : " + pillSet.getId());
-        for (int i = 0; i < pillSet.PILLCOUNT; i++) {
-            sendMessage("dispense " + (i + 1) + " " + pillSet.getCount(i + 1));
-        }
     }
 }

@@ -37,6 +37,7 @@ public class CLI implements Runnable {
         registry.registerCmd("schedule", new ScheduleCmd("schedule", controller));
         registry.registerCmd("send", new SendCmd("send", controller));
         registry.registerCmd("test", new TestCmd("test", controller));
+        registry.registerCmd("track", new TrackCmd("track", controller));
         // register omissions here!
         omissionMap.put("dis", "dispense");
         omissionMap.put("q", "exit");

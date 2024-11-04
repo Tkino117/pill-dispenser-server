@@ -34,4 +34,10 @@ public class PillSet {
     public String getId() {
         return id;
     }
+    public void printPillSet() {
+        System.out.println(id);
+        for (int i = 1; i <= PILLCOUNT; i++) {
+            System.out.println(" pill  " + i + " : " + pills.get(i));
+        }
+    }
 }
