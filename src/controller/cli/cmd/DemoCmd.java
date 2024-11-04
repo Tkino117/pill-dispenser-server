@@ -26,9 +26,9 @@ public class DemoCmd extends Cmd {
         }
         else if (Objects.equals(args.get(0), "sch") || Objects.equals(args.get(0), "schedule")) {
             controller.cli.execute("schedule once s_morning morning 60");
-            controller.cli.execute("schedule repeat sr_morning morning 5 15");
-            controller.cli.execute("schedule repeat sr_afternoon afternoon 6 15");
-            controller.cli.execute("schedule repeat sr_evening evening 7 15");
+            controller.cli.execute("schedule repeat sr_morning morning 2 30");
+            controller.cli.execute("schedule repeat sr_afternoon afternoon 12 30");
+            controller.cli.execute("schedule repeat sr_evening evening 22 30");
         }
         else if (Objects.equals(args.get(0), "debug")) {
             System.out.println("Start to execute all commands for debugging. Are you sure? (y/n)");
@@ -49,6 +49,9 @@ public class DemoCmd extends Cmd {
                 System.out.println("============ ERROR debug ===========");
                 controller.cli.execute("dis 4 1");
                 controller.cli.execute("dis 0 1");
+                controller.cli.execute("track");
+                controller.cli.execute("take");
+                controller.cli.execute("track");
                 System.out.println("====================================");
                 controller.cli.execute("dis morning");
                 controller.cli.execute("pillset edit morning 1 1");
@@ -72,6 +75,9 @@ public class DemoCmd extends Cmd {
                 controller.cli.execute("schedule remove sr_morning");
                 controller.cli.execute("schedule remove sr_afternoon");
                 controller.cli.execute("schedule remove sr_evening");
+                controller.cli.execute("schedule");
+                controller.cli.execute("take");
+                controller.cli.execute("history");
                 System.out.println("============ DEBUG FINISHED ===========");
             } catch (Exception e) {
                 System.out.println("Error : " + e.getMessage());
