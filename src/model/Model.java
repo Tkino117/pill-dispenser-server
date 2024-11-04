@@ -4,13 +4,13 @@ import controller.Controller;
 import model.alarm.AlarmManager;
 import model.data.PillSets;
 import model.history.PillHistory;
-import model.pilltracking.PillTrackingManager;
+import model.pilltracker.PillTracker;
 import model.server.ServerManager;
 
 public class Model {
     private final Controller controller;
     public final PillSets pillSets;
-    public final PillTrackingManager pillTracker;
+    public final PillTracker pillTracker;
     public final ServerManager server;
     public final AlarmManager alarm;
     public final PillHistory history;
@@ -19,7 +19,7 @@ public class Model {
         this.controller = controller;
         pillSets = new PillSets();
         history = new PillHistory();
-        pillTracker = new PillTrackingManager(history);
+        pillTracker = new PillTracker(history);
         server = new ServerManager(port, pillSets, pillTracker);
         alarm = new AlarmManager(server);
     }

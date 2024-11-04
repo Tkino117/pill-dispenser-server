@@ -2,14 +2,14 @@ package model.server;
 
 import model.data.PillSet;
 import model.data.PillSets;
-import model.pilltracking.PillTrackingManager;
+import model.pilltracker.PillTracker;
 
 public class ServerManager {
     private int port;
     private Server server;
     private final PillSets pillSets;
-    private final PillTrackingManager pillTracker;
-    public ServerManager(int port, PillSets pillSets, PillTrackingManager pillTracker) {
+    private final PillTracker pillTracker;
+    public ServerManager(int port, PillSets pillSets, PillTracker pillTracker) {
         this.port = port;
         this.pillSets = pillSets;
         this.pillTracker = pillTracker;

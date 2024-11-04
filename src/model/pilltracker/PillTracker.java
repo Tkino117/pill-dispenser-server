@@ -1,18 +1,16 @@
-package model.pilltracking;
+package model.pilltracker;
 
 import model.data.Pair;
-import model.data.PillSet;
-import model.history.Intake;
 import model.history.PillHistory;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PillTrackingManager {
+public class PillTracker {
     private final PillHistory history;
     private final List<Pair<Integer, Integer>> lastPill;  // pillId, count
-    public PillTrackingManager(PillHistory history) {
+    public PillTracker(PillHistory history) {
         this.history = history;
         lastPill = new ArrayList<>();
     }
@@ -33,6 +31,9 @@ public class PillTrackingManager {
     }
     public void takePill(LocalDateTime time) {
         history.add(time, getAndClear());
+    }
+    public boolean isEmpty() {
+        return lastPill.isEmpty();
     }
     public void printLast() {
         System.out.println("Last pill :");
