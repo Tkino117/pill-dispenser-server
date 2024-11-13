@@ -30,10 +30,10 @@ public class DemoCmd extends Cmd {
         }
         else if (Objects.equals(args.get(0), "sch") || Objects.equals(args.get(0), "schedule")) {
             System.out.println("made demo schedule");
-            controller.cli.execute("schedule once s_morning morning 60");
+//            controller.cli.execute("schedule once s_morning morning 30");
             controller.cli.execute("schedule repeat sr_morning morning 2 30");
-            controller.cli.execute("schedule repeat sr_afternoon afternoon 12 30");
-            controller.cli.execute("schedule repeat sr_evening evening 22 30");
+//            controller.cli.execute("schedule repeat sr_afternoon afternoon 12 30");
+//            controller.cli.execute("schedule repeat sr_evening evening 22 30");
         }
         else if (Objects.equals(args.get(0), "debug")) {
             System.out.println("Start to execute all commands for debugging. Are you sure? (y/n)");

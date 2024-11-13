@@ -67,6 +67,9 @@ public class ServerManager {
         }
         dispensePillSet(pillSet);
     }
+    public void adjustServo(int id, int deg) {
+        sendMessage("servo " + id + " " + deg);
+    }
     public void executeMessage(String message) {
         executor.execute(message);
     }
