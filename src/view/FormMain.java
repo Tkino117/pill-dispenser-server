@@ -151,7 +151,7 @@ public class FormMain extends JFrame {
 
         // logo panel
         JPanel logoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        logoPanel.setBackground(new Color(240, 240, 240));  // 背景色を設定
+        logoPanel.setBackground(new Color(240, 240, 240));
         logoPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
         // logo label
@@ -161,19 +161,40 @@ public class FormMain extends JFrame {
 
         // calendar panel
         JScrollPane calendarScrollPane = createCalendarPanel();
+
+        // settings panel
         JPanel settingsPanel = createSettingsPanel();
+
+        // command input panel
+        JPanel commandPanel = new JPanel(new BorderLayout());
+        commandPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
+
+        JTextField commandInput = new JTextField();
+        commandInput.setFont(baseFont);
+        commandInput.addActionListener(e -> {
+            String command = commandInput.getText();
+            onCommandEntered(command);
+            commandInput.setText("");
+        });
+
+        commandPanel.add(commandInput, BorderLayout.CENTER);
 
         // main panel
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+        // center panel to combine calendar and settings
+        JPanel centerPanel = new JPanel(new BorderLayout());
+        centerPanel.add(calendarScrollPane, BorderLayout.CENTER);
+        centerPanel.add(settingsPanel, BorderLayout.EAST);
+
         mainPanel.add(logoPanel, BorderLayout.NORTH);
-        mainPanel.add(calendarScrollPane, BorderLayout.CENTER);
-        mainPanel.add(settingsPanel, BorderLayout.EAST);
+        mainPanel.add(centerPanel, BorderLayout.CENTER);
+        mainPanel.add(commandPanel, BorderLayout.SOUTH);
 
         add(mainPanel);
 
-        setSize(1600, 1000);
+        setSize(1600, 1003);
         setLocationRelativeTo(null);
     }
 
@@ -218,6 +239,10 @@ public class FormMain extends JFrame {
         } else {
             controller.model.alarm.cancelTask(timing.scheduleID, false);
         }
+    }
+
+    public void onCommandEntered(String command) {
+        controller.cli.execute(command);
     }
 
     private void setUIFont(javax.swing.plaf.FontUIResource f) {
@@ -367,7 +392,7 @@ public class FormMain extends JFrame {
     private JPanel createSettingsPanel() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setPreferredSize(new Dimension(330, 0));  // 300から330に変更
+        panel.setPreferredSize(new Dimension(330, 0));
         panel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
         panel.setOpaque(false);
 
@@ -376,7 +401,7 @@ public class FormMain extends JFrame {
             int p2 = controller.model.pillSets.getPillSet(timing.pillSetName).getCount(2);
             int p3 = controller.model.pillSets.getPillSet(timing.pillSetName).getCount(3);
             panel.add(createTimeSetting(timing.getLabel(), new int[]{p1, p2, p3}, timing.defaultHour, timing.defaultMinute));
-            panel.add(Box.createRigidArea(new Dimension(0, 10))); // パネル間のスペース
+            panel.add(Box.createRigidArea(new Dimension(0, 3)));
         }
 
         panel.add(Box.createVerticalGlue());
