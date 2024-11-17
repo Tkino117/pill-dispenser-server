@@ -14,7 +14,8 @@ public class FormCmd extends Cmd {
     public void execute(List<String> args) {
         super.execute(args);
         if (args.size() == 1 && (args.get(0).equals("refresh") || args.get(0).equals("r"))) {
-            controller.view.refresh();
+            // !!修正必要!!
+//            controller.view.refresh();
         } else {
             System.out.println("フォームの使い方が間違っています");
         }
