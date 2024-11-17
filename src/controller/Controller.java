@@ -22,8 +22,11 @@ public class Controller {
 
     public void makeView() {
         cli.execute("pillset add morning");
+        cli.execute("pillset edit morning 1 1");
         cli.execute("pillset add afternoon");
+        cli.execute("pillset edit afternoon 1 1");
         cli.execute("pillset add evening");
+        cli.execute("pillset edit evening 1 1");
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {

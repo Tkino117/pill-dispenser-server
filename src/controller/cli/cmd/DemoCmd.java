@@ -28,6 +28,12 @@ public class DemoCmd extends Cmd {
             controller.cli.execute("pillset edit pillset3 2 1");
             controller.cli.execute("pillset edit pillset3 3 1");
         }
+        else if (Objects.equals(args.get(0), "view")) {
+            System.out.println("made demo view history");
+            if (controller.view != null) {
+                controller.view.formMain.demoHistory();
+            }
+        }
         else if (Objects.equals(args.get(0), "sch") || Objects.equals(args.get(0), "schedule")) {
             System.out.println("made demo schedule");
             controller.cli.execute("schedule once s_1 pillset1 60");

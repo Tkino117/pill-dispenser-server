@@ -17,20 +17,23 @@ import java.util.Map;
 
 public class FormMain extends JFrame {
     private final Controller controller;
-    // クラスの先頭に列挙型を追加
     public enum TimingType {
-        MORNING("朝", "morning", "sc_morning"),
-        NOON("昼", "afternoon", "sc_afternoon"),
-        NIGHT("夜", "evening", "sc_evening");
+        MORNING("朝", "morning", "sc_morning", 9, 15),
+        NOON("昼", "afternoon", "sc_afternoon", 12, 30),
+        NIGHT("夜", "evening", "sc_evening", 18, 0);
 
         private final String label;
         private final String pillSetName;
         private final String scheduleID;
+        private final int defaultHour;
+        private final int defaultMinute;
 
-        TimingType(String label, String pillSetName, String scheduleID) {
+        TimingType(String label, String pillSetName, String scheduleID, int defaultHour, int defaultMinute) {
             this.label = label;
             this.pillSetName = pillSetName;
             this.scheduleID = scheduleID;
+            this.defaultHour = defaultHour;
+            this.defaultMinute = defaultMinute;
         }
 
         public String getLabel() {
@@ -38,17 +41,12 @@ public class FormMain extends JFrame {
         }
     }
 
-    // 基本フォントサイズを1.5倍に設定
+    // font size
     private final Font baseFont = new Font(Font.DIALOG, Font.BOLD, (int)(12 * 1.5));
     private final Font titleFont = new Font(Font.DIALOG, Font.BOLD, (int)(14 * 1.5));
-
-    // 角丸の半径を定義
+    // corner radius
     private static final int CORNER_RADIUS = 15;
-
-    // 日付パネルを保持するためのマップを追加
-    private final Map<LocalDate, JPanel> datePanelsMap = new HashMap<>();
-
-    // 角丸パネルの内部クラス
+    // custom components
     private class RoundedPanel extends JPanel {
         private Color backgroundColor;
         private int radius;
@@ -70,8 +68,6 @@ public class FormMain extends JFrame {
             g2.dispose();
         }
     }
-
-    // カスタム角丸ボタンクラス
     private class RoundedButton extends JButton {
         private static final int BUTTON_RADIUS = 15;
         private Color backgroundColor = new Color(240, 240, 240);
@@ -144,32 +140,34 @@ public class FormMain extends JFrame {
         }
     }
 
+    private final Map<LocalDate, JPanel> datePanelsMap = new HashMap<>();
 
     public FormMain(Controller controller) {
         this.controller = controller;
         setTitle("Smart Pill Dispenser");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
-
         setUIFont(new javax.swing.plaf.FontUIResource(baseFont));
 
-        // ロゴパネルを作成
+        // logo panel
         JPanel logoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         logoPanel.setBackground(new Color(240, 240, 240));  // 背景色を設定
-        logoPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));  // 上下に余白を設定
+        logoPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
-        // ロゴテキストを作成
+        // logo label
         JLabel logoLabel = new JLabel("Smart Pill Dispenser");
-        logoLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 36));  // フォントサイズを36ptに設定
+        logoLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 36));
         logoPanel.add(logoLabel);
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
+        // calendar panel
         JScrollPane calendarScrollPane = createCalendarPanel();
         JPanel settingsPanel = createSettingsPanel();
 
-        mainPanel.add(logoPanel, BorderLayout.NORTH);  // ロゴパネルを追加
+        // main panel
+        JPanel mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        mainPanel.add(logoPanel, BorderLayout.NORTH);
         mainPanel.add(calendarScrollPane, BorderLayout.CENTER);
         mainPanel.add(settingsPanel, BorderLayout.EAST);
 
@@ -177,24 +175,31 @@ public class FormMain extends JFrame {
 
         setSize(1600, 1000);
         setLocationRelativeTo(null);
+    }
 
-        // !!test!!
+    // for demo
+    public void demoHistory() {
+        for (int i = 11; i <= 17; i++) {
+            LocalDate date = LocalDate.of(2024, 11, i);
+            LocalTime time = LocalTime.of(9, 30, 45);
+            int[] amounts = {1, 1, 0}; // 薬1: 2個, 薬2: 1個, 薬3: 3個
+            this.addMedicationHistory(date, time, amounts);
+        }
         LocalDate date = LocalDate.of(2024, 11, 15);
-        LocalTime time = LocalTime.of(9, 30, 45);
-        int[] amounts = {2, 1, 3}; // 薬1: 2個, 薬2: 1個, 薬3: 3個
+        LocalTime time = LocalTime.of(12, 30, 0);
+        int[] amounts = {2, 3, 4}; // 薬1: 2個, 薬2: 1個, 薬3: 3個
         this.addMedicationHistory(date, time, amounts);
-        this.addMedicationHistory(date, time, amounts);
-        this.addMedicationHistory(date, time, amounts);
+        time = LocalTime.of(18, 30, 0);
+        amounts = new int[]{0, 0, 1}; // 薬1: 2個, 薬2: 1個, 薬3: 3個
         this.addMedicationHistory(date, time, amounts);
     }
 
-    // 設定変更を処理する2つのメソッドに変更
+    // event handlers
     public void onMedicationAmountChanged(TimingType timing, int pillNumber, int newAmount) {
-        // 薬の個数が変更されたときの処理
-        System.out.println(String.format(
-                "薬の個数が変更されました - 時間帯: %s, 薬%d: %d個",
-                timing.getLabel(), pillNumber, newAmount
-        ));
+//        System.out.println(String.format(
+//                "薬の個数が変更されました - 時間帯: %s, 薬%d: %d個",
+//                timing.getLabel(), pillNumber, newAmount
+//        ));
         controller.cli.execute(("pillset edit " + timing.pillSetName + " " + pillNumber + " " + newAmount));
     }
 
@@ -215,7 +220,6 @@ public class FormMain extends JFrame {
         }
     }
 
-    // UIマネージャーのデフォルトフォントを設定するヘルパーメソッド
     private void setUIFont(javax.swing.plaf.FontUIResource f) {
         java.util.Enumeration<Object> keys = UIManager.getDefaults().keys();
         while (keys.hasMoreElements()) {
@@ -227,13 +231,11 @@ public class FormMain extends JFrame {
         }
     }
 
-    // スクロール速度を調整するヘルパーメソッド
+    // helper
     private void adjustScrollSpeed(JScrollBar scrollBar, int unitIncrement, int blockIncrement) {
         scrollBar.setUnitIncrement(unitIncrement);
         scrollBar.setBlockIncrement(blockIncrement);
     }
-
-    // TimeSlotsコンテナを探すヘルパーメソッド
     private JPanel findTimeSlotsContainer(JPanel dayPanel) {
         Component centerComponent = ((BorderLayout)dayPanel.getLayout())
                 .getLayoutComponent(dayPanel, BorderLayout.CENTER);
@@ -244,10 +246,10 @@ public class FormMain extends JFrame {
         return null;
     }
 
-    // 履歴追加のためのパブリックメソッド
+    // public methods
     public void addMedicationHistory(LocalDate date, LocalTime time, int[] medicationAmounts) {
         if (medicationAmounts.length != 3) {
-            throw new IllegalArgumentException("薬の数は3種類である必要があります");
+            throw new IllegalArgumentException("medicationAmounts must have 3 elements");
         }
 
         SwingUtilities.invokeLater(() -> {
@@ -279,7 +281,6 @@ public class FormMain extends JFrame {
             }
         });
     }
-
     public void addMedicationHistory(Intake intake) {
         int[] pills = {0, 0, 0};
         for (Pair<Integer, Integer> i : intake.getPills()) {
@@ -287,6 +288,7 @@ public class FormMain extends JFrame {
         }
         addMedicationHistory(intake.getTime().toLocalDate(), intake.getTime().toLocalTime(), pills);
     }
+
 
     private JScrollPane createCalendarPanel() {
         LocalDate startDate = LocalDate.of(2024, 11, 10);
@@ -332,7 +334,6 @@ public class FormMain extends JFrame {
         timeSlots.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         timeSlots.setOpaque(false);
 
-        // デフォルトの空白スペースを追加
         timeSlots.add(Box.createVerticalGlue());
 
         panel.add(timeSlots, BorderLayout.CENTER);
@@ -364,34 +365,31 @@ public class FormMain extends JFrame {
     }
 
     private JPanel createSettingsPanel() {
-        // GridLayoutからBoxLayoutに変更して上詰めを実現
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setPreferredSize(new Dimension(330, 0));  // 300から330に変更
         panel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
         panel.setOpaque(false);
 
-        // 朝、昼、夜のパネルを追加
         for (TimingType timing : TimingType.values()) {
             int p1 = controller.model.pillSets.getPillSet(timing.pillSetName).getCount(1);
             int p2 = controller.model.pillSets.getPillSet(timing.pillSetName).getCount(2);
             int p3 = controller.model.pillSets.getPillSet(timing.pillSetName).getCount(3);
-            panel.add(createTimeSetting(timing.getLabel(), new int[]{p1, p2, p3}));
+            panel.add(createTimeSetting(timing.getLabel(), new int[]{p1, p2, p3}, timing.defaultHour, timing.defaultMinute));
             panel.add(Box.createRigidArea(new Dimension(0, 10))); // パネル間のスペース
         }
 
-        // 下部に可変スペースを追加して上詰めを実現
         panel.add(Box.createVerticalGlue());
 
         return panel;
     }
 
-    private JPanel createTimeSetting(String time, int[] amounts) {
+    private JPanel createTimeSetting(String time, int[] amounts, int hour, int minute) {
         RoundedPanel panel = new RoundedPanel(new BorderLayout(), Color.WHITE, CORNER_RADIUS);
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, panel.getPreferredSize().height));
 
-        // TimingTypeを取得
+        // TimingType
         TimingType timing = Arrays.stream(TimingType.values())
                 .filter(t -> t.getLabel().equals(time))
                 .findFirst()
@@ -404,7 +402,7 @@ public class FormMain extends JFrame {
         titlePanel.add(titleLabel);
         panel.add(titlePanel, BorderLayout.NORTH);
 
-        // スピナーを保持する配列
+        // Spinners
         JSpinner[] spinners = new JSpinner[3];
 
         JPanel medicationPanel = new JPanel(new GridLayout(3, 1, 5, 5));
@@ -444,9 +442,9 @@ public class FormMain extends JFrame {
         dailyCheck.setFont(baseFont);
         dailyCheck.setOpaque(false);
 
-        JSpinner hourSpinner = new JSpinner(new SpinnerNumberModel(12, 0, 23, 1));
+        JSpinner hourSpinner = new JSpinner(new SpinnerNumberModel(hour, 0, 23, 1));
         hourSpinner.setFont(baseFont);
-        JSpinner minuteSpinner = new JSpinner(new SpinnerNumberModel(0, 0, 59, 1));
+        JSpinner minuteSpinner = new JSpinner(new SpinnerNumberModel(minute, 0, 59, 1));
         minuteSpinner.setFont(baseFont);
 
         JLabel hourLabel = new JLabel("時");
@@ -454,7 +452,7 @@ public class FormMain extends JFrame {
         JLabel minuteLabel = new JLabel("分に服用");
         minuteLabel.setFont(baseFont);
 
-        // 各スピナーに個別のリスナーを追加
+        // add listeners for each spinner
         for (int i = 0; i < spinners.length; i++) {
             final int pillNumber = i + 1;
             spinners[i].addChangeListener(e -> {
@@ -463,15 +461,13 @@ public class FormMain extends JFrame {
             });
         }
 
-        // スケジュール設定（時刻と毎日設定）の共通リスナー
         ChangeListener scheduleChangeListener = e -> {
             boolean isDaily = dailyCheck.isSelected();
-            int hour = (Integer) hourSpinner.getValue();
-            int minute = (Integer) minuteSpinner.getValue();
-            onScheduleSettingChanged(timing, isDaily, hour, minute);
+            int h = (Integer) hourSpinner.getValue();
+            int m = (Integer) minuteSpinner.getValue();
+            onScheduleSettingChanged(timing, isDaily, h, m);
         };
 
-        // 時刻スピナーとチェックボックスに共通のリスナーを追加
         hourSpinner.addChangeListener(scheduleChangeListener);
         minuteSpinner.addChangeListener(scheduleChangeListener);
         dailyCheck.addActionListener(e -> scheduleChangeListener.stateChanged(null));
