@@ -1,5 +1,7 @@
 package view;
 
+import controller.Controller;
+
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
@@ -10,17 +12,20 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SmartPillDispenser extends JFrame {
+public class FormMain extends JFrame {
+    private final Controller controller;
     // クラスの先頭に列挙型を追加
     public enum TimingType {
-        MORNING("朝"),
-        NOON("昼"),
-        NIGHT("夜");
+        MORNING("朝", "morning"),
+        NOON("昼", "afternoon"),
+        NIGHT("夜", "evening");
 
         private final String label;
+        private final String pillSetName;
 
-        TimingType(String label) {
+        TimingType(String label, String pillSetName) {
             this.label = label;
+            this.pillSetName = pillSetName;
         }
 
         public String getLabel() {
@@ -135,7 +140,8 @@ public class SmartPillDispenser extends JFrame {
     }
 
 
-    public SmartPillDispenser() {
+    public FormMain(Controller controller) {
+        this.controller = controller;
         setTitle("Smart Pill Dispenser");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -185,6 +191,7 @@ public class SmartPillDispenser extends JFrame {
                 timing.getLabel(), isDaily, hour, minute,
                 medicationAmounts[0], medicationAmounts[1], medicationAmounts[2]
         ));
+
     }
 
     // UIマネージャーのデフォルトフォントを設定するヘルパーメソッド
@@ -331,11 +338,13 @@ public class SmartPillDispenser extends JFrame {
         panel.setOpaque(false);
 
         // 朝、昼、夜のパネルを追加
-        panel.add(createTimeSetting("朝", new int[]{2, 1, 3}));
-        panel.add(Box.createRigidArea(new Dimension(0, 10))); // パネル間のスペース
-        panel.add(createTimeSetting("昼", new int[]{2, 2, 2}));
-        panel.add(Box.createRigidArea(new Dimension(0, 10))); // パネル間のスペース
-        panel.add(createTimeSetting("夜", new int[]{2, 2, 2}));
+        for (TimingType timing : TimingType.values()) {
+            int p1 = controller.model.pillSets.getPillSet(timing.pillSetName).getCount(1);
+            int p2 = controller.model.pillSets.getPillSet(timing.pillSetName).getCount(2);
+            int p3 = controller.model.pillSets.getPillSet(timing.pillSetName).getCount(3);
+            panel.add(createTimeSetting(timing.getLabel(), new int[]{p1, p2, p3}));
+            panel.add(Box.createRigidArea(new Dimension(0, 10))); // パネル間のスペース
+        }
 
         // 下部に可変スペースを追加して上詰めを実現
         panel.add(Box.createVerticalGlue());
@@ -452,6 +461,7 @@ public class SmartPillDispenser extends JFrame {
                     java.time.LocalTime.now().getMinute(),
                     java.time.LocalTime.now().getSecond());
             JOptionPane.showMessageDialog(panel, time + "の薬を排出します\n排出時刻: " + currentTime);
+            controller.cli.execute("dispense " + timing.pillSetName);
         });
         dispensePanel.add(dispenseButton);
 
@@ -465,10 +475,4 @@ public class SmartPillDispenser extends JFrame {
         return panel;
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            SmartPillDispenser dispenser = new SmartPillDispenser();
-            dispenser.setVisible(true);
-        });
-    }
 }

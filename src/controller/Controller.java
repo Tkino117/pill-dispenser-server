@@ -7,16 +7,29 @@ import view.View;
 public class Controller {
     public int port;
     public final CLI cli;
-    public final View view;
+    public View view;
     public final Model model;
     public Controller(int port) {
         System.out.println("Controller created");
         this.port = port;
         cli = new CLI(this);
-        view = new View(this);
+        view = null;
         model = new Model(port, this);
         Thread cliThread = new Thread(cli);
         cliThread.start();
+        makeView();
+    }
+
+    public void makeView() {
+        cli.execute("pillset add morning");
+        cli.execute("pillset add afternoon");
+        cli.execute("pillset add evening");
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        view = new View(this);
     }
 
 
