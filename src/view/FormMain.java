@@ -225,7 +225,6 @@ public class FormMain extends JFrame {
     }
 
     public void onScheduleSettingChanged(TimingType timing, boolean isDaily, int hour, int minute) {
-        // 服用スケジュール（時刻と毎日設定）が変更されたときの処理
 //        System.out.println(String.format(
 //                "服用スケジュールが変更されました - 時間帯: %s, 毎日: %b, %02d:%02d",
 //                timing.getLabel(), isDaily, hour, minute
@@ -292,7 +291,6 @@ public class FormMain extends JFrame {
 
                     timeSlot.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-                    // コンポーネントの数を取得（最後のVerticalGlueを考慮）
                     int componentCount = timeSlotsContainer.getComponentCount();
                     if (componentCount > 0) {
                         // VerticalGlueの直前に追加
@@ -313,7 +311,6 @@ public class FormMain extends JFrame {
         }
         addMedicationHistory(intake.getTime().toLocalDate(), intake.getTime().toLocalTime(), pills);
     }
-
 
     private JScrollPane createCalendarPanel() {
         LocalDate startDate = LocalDate.of(2024, 11, 10);
