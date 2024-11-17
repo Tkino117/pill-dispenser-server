@@ -1,14 +1,33 @@
 package view;
 
 import javax.swing.*;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 public class SmartPillDispenser extends JFrame {
+    // クラスの先頭に列挙型を追加
+    public enum TimingType {
+        MORNING("朝"),
+        NOON("昼"),
+        NIGHT("夜");
+
+        private final String label;
+
+        TimingType(String label) {
+            this.label = label;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+    }
+
     // 基本フォントサイズを1.5倍に設定
     private final Font baseFont = new Font(Font.DIALOG, Font.BOLD, (int)(12 * 1.5));
     private final Font titleFont = new Font(Font.DIALOG, Font.BOLD, (int)(14 * 1.5));
@@ -18,43 +37,6 @@ public class SmartPillDispenser extends JFrame {
 
     // 日付パネルを保持するためのマップを追加
     private final Map<LocalDate, JPanel> datePanelsMap = new HashMap<>();
-
-    // カスタムスクロールペインクラス
-    private class NestedScrollPane extends JScrollPane {
-        private final JScrollPane parentScrollPane;
-
-        public NestedScrollPane(Component view, JScrollPane parent) {
-            super(view);
-            this.parentScrollPane = parent;
-
-            // スクロールバーのイベントを監視
-            getVerticalScrollBar().addAdjustmentListener(e -> {
-                JScrollBar scrollBar = (JScrollBar) e.getSource();
-                // スクロールバーが最下部または最上部に達している場合
-                if (scrollBar.getValue() + scrollBar.getVisibleAmount() >= scrollBar.getMaximum() ||
-                        scrollBar.getValue() <= scrollBar.getMinimum()) {
-                    // 親スクロールペインにホイールイベントを伝播させるためのフラグを設定
-                    setWheelScrollingEnabled(false);
-                } else {
-                    setWheelScrollingEnabled(true);
-                }
-            });
-
-            // マウスホイールイベントの処理
-            addMouseWheelListener(e -> {
-                JScrollBar verticalBar = getVerticalScrollBar();
-                // 下方向のスクロール（最下部で下向きスクロール）または
-                // 上方向のスクロール（最上部で上向きスクロール）
-                if (!isWheelScrollingEnabled() &&
-                        ((e.getWheelRotation() > 0 && verticalBar.getValue() + verticalBar.getVisibleAmount() >= verticalBar.getMaximum()) ||
-                                (e.getWheelRotation() < 0 && verticalBar.getValue() <= verticalBar.getMinimum()))) {
-                    // 親スクロールペインにイベントを渡す
-                    parentScrollPane.dispatchEvent(e);
-                    e.consume();
-                }
-            });
-        }
-    }
 
     // 角丸パネルの内部クラス
     private class RoundedPanel extends JPanel {
@@ -152,6 +134,83 @@ public class SmartPillDispenser extends JFrame {
         }
     }
 
+    // カスタムウィンドウコントロールボタンクラス
+    private class WindowControlButton extends JButton {
+        private Color normalColor = new Color(240, 240, 240);
+        private Color hoverColor;
+        private Color pressedColor;
+        private boolean isHovered = false;
+        private boolean isPressed = false;
+
+        public WindowControlButton(String text, Color hoverColor, Color pressedColor) {
+            super(text);
+            this.hoverColor = hoverColor;
+            this.pressedColor = pressedColor;
+            setUp();
+        }
+
+        private void setUp() {
+            setContentAreaFilled(false);
+            setFocusPainted(false);
+            setBorderPainted(false);
+            setFont(new Font(Font.DIALOG, Font.BOLD, 16));
+            setForeground(Color.DARK_GRAY);
+            setPreferredSize(new Dimension(45, 30));
+            setOpaque(false);
+
+            addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseEntered(java.awt.event.MouseEvent evt) {
+                    isHovered = true;
+                    repaint();
+                }
+
+                public void mouseExited(java.awt.event.MouseEvent evt) {
+                    isHovered = false;
+                    isPressed = false;
+                    repaint();
+                }
+
+                public void mousePressed(java.awt.event.MouseEvent evt) {
+                    isPressed = true;
+                    repaint();
+                }
+
+                public void mouseReleased(java.awt.event.MouseEvent evt) {
+                    isPressed = false;
+                    repaint();
+                }
+            });
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+            if (isPressed) {
+                g2.setColor(pressedColor);
+            } else if (isHovered) {
+                g2.setColor(hoverColor);
+            } else {
+                g2.setColor(normalColor);
+            }
+
+            g2.fillRect(0, 0, getWidth(), getHeight());
+
+            FontMetrics metrics = g2.getFontMetrics(getFont());
+            int textWidth = metrics.stringWidth(getText());
+            int textHeight = metrics.getHeight();
+            int x = (getWidth() - textWidth) / 2;
+            int y = ((getHeight() - textHeight) / 2) + metrics.getAscent();
+
+            g2.setColor(getForeground());
+            g2.setFont(getFont());
+            g2.drawString(getText(), x, y);
+
+            g2.dispose();
+        }
+    }
+
 
     public SmartPillDispenser() {
         setTitle("Smart Pill Dispenser");
@@ -160,18 +219,29 @@ public class SmartPillDispenser extends JFrame {
 
         setUIFont(new javax.swing.plaf.FontUIResource(baseFont));
 
+        // ロゴパネルを作成
+        JPanel logoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        logoPanel.setBackground(new Color(240, 240, 240));  // 背景色を設定
+        logoPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));  // 上下に余白を設定
+
+        // ロゴテキストを作成
+        JLabel logoLabel = new JLabel("Smart Pill Dispenser");
+        logoLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 36));  // フォントサイズを36ptに設定
+        logoPanel.add(logoLabel);
+
         JPanel mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         JScrollPane calendarScrollPane = createCalendarPanel();
         JPanel settingsPanel = createSettingsPanel();
 
+        mainPanel.add(logoPanel, BorderLayout.NORTH);  // ロゴパネルを追加
         mainPanel.add(calendarScrollPane, BorderLayout.CENTER);
         mainPanel.add(settingsPanel, BorderLayout.EAST);
 
         add(mainPanel);
 
-        setSize(1600, 900);
+        setSize(1600, 1000);
         setLocationRelativeTo(null);
 
         // !!test!!
@@ -182,6 +252,16 @@ public class SmartPillDispenser extends JFrame {
         this.addMedicationHistory(date, time, amounts);
         this.addMedicationHistory(date, time, amounts);
         this.addMedicationHistory(date, time, amounts);
+    }
+
+    // 設定変更を処理するメソッドを追加
+    public void onSettingsChanged(TimingType timing, boolean isDaily, int hour, int minute, int[] medicationAmounts) {
+        // このメソッドをオーバーライドして使用
+        System.out.println(String.format(
+                "設定が変更されました - 時間帯: %s, 毎日: %b, %02d:%02d, 薬の個数: [%d, %d, %d]",
+                timing.getLabel(), isDaily, hour, minute,
+                medicationAmounts[0], medicationAmounts[1], medicationAmounts[2]
+        ));
     }
 
     // UIマネージャーのデフォルトフォントを設定するヘルパーメソッド
@@ -224,7 +304,7 @@ public class SmartPillDispenser extends JFrame {
             if (dayPanel != null) {
                 JPanel timeSlotsContainer = findTimeSlotsContainer(dayPanel);
                 if (timeSlotsContainer != null) {
-                    String timeStr = String.format("%02d:%02d:%02d",
+                    String timeStr = String.format("%02d時%02d分%02d秒",
                             time.getHour(), time.getMinute(), time.getSecond());
 
                     JPanel timeSlot = createTimeSlotPanel(timeStr,
@@ -264,7 +344,7 @@ public class SmartPillDispenser extends JFrame {
 
         LocalDate currentDate = startDate;
         while (!currentDate.isAfter(endDate)) {
-            JPanel dayPanel = createDayPanel(currentDate.format(formatter), mainScrollPane);
+            JPanel dayPanel = createDayPanel(currentDate.format(formatter));
             panel.add(dayPanel);
             datePanelsMap.put(currentDate, dayPanel);
             currentDate = currentDate.plusDays(1);
@@ -273,7 +353,7 @@ public class SmartPillDispenser extends JFrame {
         return mainScrollPane;
     }
 
-    private JPanel createDayPanel(String date, JScrollPane parentScrollPane) {
+    private JPanel createDayPanel(String date) {
         RoundedPanel panel = new RoundedPanel(new BorderLayout(), Color.WHITE, CORNER_RADIUS);
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
@@ -323,7 +403,7 @@ public class SmartPillDispenser extends JFrame {
         // GridLayoutからBoxLayoutに変更して上詰めを実現
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        panel.setPreferredSize(new Dimension(300, 0));
+        panel.setPreferredSize(new Dimension(330, 0));  // 300から330に変更
         panel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
         panel.setOpaque(false);
 
@@ -343,17 +423,23 @@ public class SmartPillDispenser extends JFrame {
     private JPanel createTimeSetting(String time, int[] amounts) {
         RoundedPanel panel = new RoundedPanel(new BorderLayout(), Color.WHITE, CORNER_RADIUS);
         panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
-        // 最大サイズを設定して横幅いっぱいに広がるようにする
         panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, panel.getPreferredSize().height));
 
-        // 残りのコードは変更なし
+        // TimingTypeを取得
+        TimingType timing = Arrays.stream(TimingType.values())
+                .filter(t -> t.getLabel().equals(time))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Invalid timing: " + time));
+
         JPanel titlePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         titlePanel.setOpaque(false);
         JLabel titleLabel = new JLabel(time);
         titleLabel.setFont(titleFont);
         titlePanel.add(titleLabel);
         panel.add(titlePanel, BorderLayout.NORTH);
+
+        // スピナーを保持する配列
+        JSpinner[] spinners = new JSpinner[3];
 
         JPanel medicationPanel = new JPanel(new GridLayout(3, 1, 5, 5));
         medicationPanel.setOpaque(false);
@@ -365,15 +451,15 @@ public class SmartPillDispenser extends JFrame {
             label.setFont(baseFont);
             row.add(label);
 
-            JSpinner spinner = new JSpinner(new SpinnerNumberModel(amounts[i], 0, 10, 1));
-            spinner.setFont(baseFont);
-            Dimension spinnerSize = new Dimension(80, spinner.getPreferredSize().height);
-            spinner.setPreferredSize(spinnerSize);
+            spinners[i] = new JSpinner(new SpinnerNumberModel(amounts[i], 0, 10, 1));
+            spinners[i].setFont(baseFont);
+            Dimension spinnerSize = new Dimension(80, spinners[i].getPreferredSize().height);
+            spinners[i].setPreferredSize(spinnerSize);
 
             JLabel unitLabel = new JLabel("個");
             unitLabel.setFont(baseFont);
 
-            row.add(spinner);
+            row.add(spinners[i]);
             row.add(unitLabel);
             medicationPanel.add(row);
         }
@@ -402,13 +488,35 @@ public class SmartPillDispenser extends JFrame {
         JLabel minuteLabel = new JLabel("分に服用");
         minuteLabel.setFont(baseFont);
 
+        // 設定変更リスナーを作成
+        ChangeListener settingsChangeListener = e -> {
+            int[] currentAmounts = new int[3];
+            for (int i = 0; i < 3; i++) {
+                currentAmounts[i] = (Integer) spinners[i].getValue();
+            }
+
+            int hour = (Integer) hourSpinner.getValue();
+            int minute = (Integer) minuteSpinner.getValue();
+            boolean isDaily = dailyCheck.isSelected();
+
+            onSettingsChanged(timing, isDaily, hour, minute, currentAmounts);
+        };
+
+        // 各コンポーネントにリスナーを追加
+        for (JSpinner spinner : spinners) {
+            spinner.addChangeListener(settingsChangeListener);
+        }
+        hourSpinner.addChangeListener(settingsChangeListener);
+        minuteSpinner.addChangeListener(settingsChangeListener);
+        dailyCheck.addActionListener(e -> settingsChangeListener.stateChanged(null));
+
         timePanel.add(dailyCheck);
         timePanel.add(hourSpinner);
         timePanel.add(hourLabel);
         timePanel.add(minuteSpinner);
         timePanel.add(minuteLabel);
 
-        JPanel dispensePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel dispensePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         dispensePanel.setOpaque(false);
         dispensePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -416,7 +524,6 @@ public class SmartPillDispenser extends JFrame {
         dispenseButton.setFont(baseFont);
         dispenseButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
         dispenseButton.addActionListener(e -> {
-            // 現在時刻を時:分:秒形式で取得
             String currentTime = String.format("%02d:%02d:%02d",
                     java.time.LocalTime.now().getHour(),
                     java.time.LocalTime.now().getMinute(),
