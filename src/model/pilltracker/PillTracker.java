@@ -1,5 +1,6 @@
 package model.pilltracker;
 
+import controller.Controller;
 import model.data.Pair;
 import model.history.PillHistory;
 
@@ -10,8 +11,10 @@ import java.util.List;
 public class PillTracker {
     private final PillHistory history;
     private final List<Pair<Integer, Integer>> lastPill;  // pillId, count
-    public PillTracker(PillHistory history) {
+    private final Controller controller;
+    public PillTracker(PillHistory history, Controller controller) {
         this.history = history;
+        this.controller = controller;
         lastPill = new ArrayList<>();
     }
     public void add(int pillId, int count) {
@@ -28,10 +31,10 @@ public class PillTracker {
     }
     public void takePill() {
         if (!lastPill.isEmpty())
-            history.add(getAndClear());
+            history.add(getAndClear(), controller.view);
     }
     public void takePill(LocalDateTime time) {
-        history.add(time, getAndClear());
+        history.add(time, getAndClear(), controller.view);
     }
     public boolean isEmpty() {
         return lastPill.isEmpty();

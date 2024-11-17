@@ -1,11 +1,14 @@
 package view;
 
 import controller.Controller;
+import model.data.Pair;
+import model.history.Intake;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
@@ -16,16 +19,18 @@ public class FormMain extends JFrame {
     private final Controller controller;
     // クラスの先頭に列挙型を追加
     public enum TimingType {
-        MORNING("朝", "morning"),
-        NOON("昼", "afternoon"),
-        NIGHT("夜", "evening");
+        MORNING("朝", "morning", "sc_morning"),
+        NOON("昼", "afternoon", "sc_afternoon"),
+        NIGHT("夜", "evening", "sc_evening");
 
         private final String label;
         private final String pillSetName;
+        private final String scheduleID;
 
-        TimingType(String label, String pillSetName) {
+        TimingType(String label, String pillSetName, String scheduleID) {
             this.label = label;
             this.pillSetName = pillSetName;
+            this.scheduleID = scheduleID;
         }
 
         public String getLabel() {
@@ -183,15 +188,31 @@ public class FormMain extends JFrame {
         this.addMedicationHistory(date, time, amounts);
     }
 
-    // 設定変更を処理するメソッドを追加
-    public void onSettingsChanged(TimingType timing, boolean isDaily, int hour, int minute, int[] medicationAmounts) {
-        // このメソッドをオーバーライドして使用
+    // 設定変更を処理する2つのメソッドに変更
+    public void onMedicationAmountChanged(TimingType timing, int pillNumber, int newAmount) {
+        // 薬の個数が変更されたときの処理
         System.out.println(String.format(
-                "設定が変更されました - 時間帯: %s, 毎日: %b, %02d:%02d, 薬の個数: [%d, %d, %d]",
-                timing.getLabel(), isDaily, hour, minute,
-                medicationAmounts[0], medicationAmounts[1], medicationAmounts[2]
+                "薬の個数が変更されました - 時間帯: %s, 薬%d: %d個",
+                timing.getLabel(), pillNumber, newAmount
         ));
+        controller.cli.execute(("pillset edit " + timing.pillSetName + " " + pillNumber + " " + newAmount));
+    }
 
+    public void onScheduleSettingChanged(TimingType timing, boolean isDaily, int hour, int minute) {
+        // 服用スケジュール（時刻と毎日設定）が変更されたときの処理
+//        System.out.println(String.format(
+//                "服用スケジュールが変更されました - 時間帯: %s, 毎日: %b, %02d:%02d",
+//                timing.getLabel(), isDaily, hour, minute
+//        ));
+        if (isDaily) {
+            //!!note!! 本来 schedule command をhh:mm対応するべきだった
+            controller.model.alarm.cancelTask(timing.scheduleID, false);
+            controller.model.alarm.schedulePeriodicTask(timing.scheduleID,
+                    controller.model.alarm.toTask(controller.model.pillSets.getPillSet(timing.pillSetName)),
+                    LocalDateTime.of(LocalDate.now(), LocalTime.of(hour, minute)), 86400);
+        } else {
+            controller.model.alarm.cancelTask(timing.scheduleID, false);
+        }
     }
 
     // UIマネージャーのデフォルトフォントを設定するヘルパーメソッド
@@ -244,14 +265,27 @@ public class FormMain extends JFrame {
 
                     timeSlot.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-                    timeSlotsContainer.add(timeSlot, 0);
-                    timeSlotsContainer.add(Box.createRigidArea(new Dimension(0, 5)), 1);
+                    // コンポーネントの数を取得（最後のVerticalGlueを考慮）
+                    int componentCount = timeSlotsContainer.getComponentCount();
+                    if (componentCount > 0) {
+                        // VerticalGlueの直前に追加
+                        timeSlotsContainer.add(timeSlot, componentCount - 1);
+                        timeSlotsContainer.add(Box.createRigidArea(new Dimension(0, 5)), componentCount - 1);
+                    }
 
                     timeSlotsContainer.revalidate();
                     timeSlotsContainer.repaint();
                 }
             }
         });
+    }
+
+    public void addMedicationHistory(Intake intake) {
+        int[] pills = {0, 0, 0};
+        for (Pair<Integer, Integer> i : intake.getPills()) {
+            pills[i.getFirst() - 1] = i.getSecond();
+        }
+        addMedicationHistory(intake.getTime().toLocalDate(), intake.getTime().toLocalTime(), pills);
     }
 
     private JScrollPane createCalendarPanel() {
@@ -420,27 +454,27 @@ public class FormMain extends JFrame {
         JLabel minuteLabel = new JLabel("分に服用");
         minuteLabel.setFont(baseFont);
 
-        // 設定変更リスナーを作成
-        ChangeListener settingsChangeListener = e -> {
-            int[] currentAmounts = new int[3];
-            for (int i = 0; i < 3; i++) {
-                currentAmounts[i] = (Integer) spinners[i].getValue();
-            }
+        // 各スピナーに個別のリスナーを追加
+        for (int i = 0; i < spinners.length; i++) {
+            final int pillNumber = i + 1;
+            spinners[i].addChangeListener(e -> {
+                int newAmount = (Integer) spinners[pillNumber - 1].getValue();
+                onMedicationAmountChanged(timing, pillNumber, newAmount);
+            });
+        }
 
+        // スケジュール設定（時刻と毎日設定）の共通リスナー
+        ChangeListener scheduleChangeListener = e -> {
+            boolean isDaily = dailyCheck.isSelected();
             int hour = (Integer) hourSpinner.getValue();
             int minute = (Integer) minuteSpinner.getValue();
-            boolean isDaily = dailyCheck.isSelected();
-
-            onSettingsChanged(timing, isDaily, hour, minute, currentAmounts);
+            onScheduleSettingChanged(timing, isDaily, hour, minute);
         };
 
-        // 各コンポーネントにリスナーを追加
-        for (JSpinner spinner : spinners) {
-            spinner.addChangeListener(settingsChangeListener);
-        }
-        hourSpinner.addChangeListener(settingsChangeListener);
-        minuteSpinner.addChangeListener(settingsChangeListener);
-        dailyCheck.addActionListener(e -> settingsChangeListener.stateChanged(null));
+        // 時刻スピナーとチェックボックスに共通のリスナーを追加
+        hourSpinner.addChangeListener(scheduleChangeListener);
+        minuteSpinner.addChangeListener(scheduleChangeListener);
+        dailyCheck.addActionListener(e -> scheduleChangeListener.stateChanged(null));
 
         timePanel.add(dailyCheck);
         timePanel.add(hourSpinner);

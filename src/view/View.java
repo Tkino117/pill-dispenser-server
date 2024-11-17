@@ -10,8 +10,8 @@ public class View {
     public View(Controller controller) {
         this.controller = controller;
         SwingUtilities.invokeLater(() -> {
-            FormMain dispenser = new FormMain(controller);
-            dispenser.setVisible(true);
+            formMain = new FormMain(controller);
+            formMain.setVisible(true);
         });
     }
 }
