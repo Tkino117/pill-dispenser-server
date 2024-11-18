@@ -214,15 +214,19 @@ public class FormMain extends JFrame {
         setLayout(new BorderLayout());
         setUIFont(new javax.swing.plaf.FontUIResource(baseFont));
 
-        // logo panel
-        JPanel logoPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        logoPanel.setBackground(new Color(240, 240, 240));
-        logoPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
+        // logo panle
+        RoundedPanel logoPanel = new RoundedPanel(new BorderLayout(), new Color(135, 135, 150), CORNER_RADIUS);
+        logoPanel.setBorder(BorderFactory.createEmptyBorder(25, 10, 5, 10));  // 上下のpaddingを15に調整
 
-        // logo label
+        JPanel centeringPanel = new JPanel(new GridBagLayout());  // GridBagLayoutで中央寄せ
+        centeringPanel.setOpaque(false);
+
         JLabel logoLabel = new JLabel("Smart Pill Dispenser");
-        logoLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 36));
-        logoPanel.add(logoLabel);
+        logoLabel.setFont(new Font("Yu Gothic", Font.BOLD, 36));
+        logoLabel.setForeground(Color.WHITE);
+
+        centeringPanel.add(logoLabel);
+        logoPanel.add(centeringPanel, BorderLayout.CENTER);
 
         // calendar panel
         JScrollPane calendarScrollPane = createCalendarPanel();
@@ -252,6 +256,7 @@ public class FormMain extends JFrame {
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.add(calendarScrollPane, BorderLayout.CENTER);
         centerPanel.add(settingsPanel, BorderLayout.EAST);
+        centerPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
 
         mainPanel.add(logoPanel, BorderLayout.NORTH);
         mainPanel.add(centerPanel, BorderLayout.CENTER);
@@ -395,6 +400,8 @@ public class FormMain extends JFrame {
         JScrollPane mainScrollPane = new JScrollPane(panel);
         mainScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         mainScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        mainScrollPane.setBorder(null);
+        mainScrollPane.getVerticalScrollBar().setSize(new Dimension(0, 0));
 
         adjustScrollSpeed(mainScrollPane.getVerticalScrollBar(), 50, 30);
         adjustScrollSpeed(mainScrollPane.getHorizontalScrollBar(), 50, 30);
@@ -454,7 +461,7 @@ public class FormMain extends JFrame {
     }
 
     private JPanel createTimeSlotPanel(String time, String... medications) {
-        RoundedPanel borderedPanel = new RoundedPanel(new BorderLayout(), new Color(245, 245, 245), CORNER_RADIUS);
+        RoundedPanel borderedPanel = new RoundedPanel(new BorderLayout(), new Color(237, 237, 243), CORNER_RADIUS);
         borderedPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         borderedPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, borderedPanel.getPreferredSize().height));
 
@@ -480,7 +487,7 @@ public class FormMain extends JFrame {
         // Create container panel
         JPanel containerPanel = new JPanel(new BorderLayout());
         containerPanel.setPreferredSize(new Dimension(303, 0));
-        containerPanel.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 7));
+        containerPanel.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 0));
         containerPanel.setOpaque(false);
 
         // Create panel for timing settings
@@ -503,11 +510,13 @@ public class FormMain extends JFrame {
 
         // Create scroll pane
         JScrollPane scrollPane = new JScrollPane(settingsPanel);
+
         scrollPane.setBorder(null);
         scrollPane.setOpaque(false);
         scrollPane.getViewport().setOpaque(false);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
 
         // Adjust scroll speed
         adjustScrollSpeed(scrollPane.getVerticalScrollBar(), 16, 50);
