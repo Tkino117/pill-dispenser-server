@@ -5,6 +5,8 @@ import model.data.PillSet;
 import model.data.PillSets;
 import model.pilltracker.PillTracker;
 
+import javax.swing.*;
+
 public class ServerManager {
     private int port;
     private Server server;
@@ -45,6 +47,10 @@ public class ServerManager {
         server.sendMessage(message);
     }
     public void dispensePill(int pillId, int count, boolean showMessage) {
+        if (pillId < 1 || pillId > 3) {
+            System.out.println("ERROR : Invalid pill id.");
+            return;
+        }
         if (showMessage)
             System.out.println("Dispensing pill " + pillId + " count " + count);
         sendMessage("dispense " + pillId + " " + count);
@@ -54,6 +60,18 @@ public class ServerManager {
         dispensePill(pillId, count, true);
     }
     public void dispensePillSet(PillSet pillSet) {
+        if (pillTracker.isEmpty()) {
+            int result = JOptionPane.showConfirmDialog(
+                    null,
+                    "薬の飲み残しがあります。排出しますか？",
+                    "注意",
+                    JOptionPane.YES_NO_OPTION
+            );
+            if (result == JOptionPane.NO_OPTION) {
+                System.out.println("dispensing canceled");
+                return;
+            }
+        }
         System.out.println("Dispensing pill set : " + pillSet.getId());
         for (int i = 0; i < pillSet.PILLCOUNT; i++) {
             dispensePill(i + 1, pillSet.getCount(i + 1), false);
