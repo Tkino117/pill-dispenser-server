@@ -354,9 +354,9 @@ public class FormMain extends JFrame {
                             time.getHour(), time.getMinute(), time.getSecond());
 
                     JPanel timeSlot = createTimeSlotPanel(timeStr,
-                            "薬1: " + medicationAmounts[0] + "個",
-                            "薬2: " + medicationAmounts[1] + "個",
-                            "薬3: " + medicationAmounts[2] + "個");
+                            "くすり1: " + medicationAmounts[0] + "個",
+                            "くすり2: " + medicationAmounts[1] + "個",
+                            "くすり3: " + medicationAmounts[2] + "個");
 
                     timeSlot.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -459,7 +459,7 @@ public class FormMain extends JFrame {
         // Create container panel
         JPanel containerPanel = new JPanel(new BorderLayout());
         containerPanel.setPreferredSize(new Dimension(330, 0));
-        containerPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
+        containerPanel.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 0));
         containerPanel.setOpaque(false);
 
         // Create panel for timing settings
@@ -477,7 +477,7 @@ public class FormMain extends JFrame {
                     new int[]{p1, p2, p3}, timing.defaultHour, timing.defaultMinute);
             panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, panel.getPreferredSize().height));
             settingsPanel.add(panel);
-            settingsPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+            settingsPanel.add(Box.createRigidArea(new Dimension(0, 3)));
         }
 
         // Create scroll pane
@@ -497,60 +497,67 @@ public class FormMain extends JFrame {
     }
 
     private JPanel createTimeSetting(String time, int[] amounts, int hour, int minute) {
-        // Get outer panel color based on timing
         Color panelColor = getTimingColor(time);
 
-        // Create outer colored panel
         RoundedPanel outerPanel = new RoundedPanel(new BorderLayout(), panelColor, CORNER_RADIUS);
-        outerPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        outerPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, outerPanel.getPreferredSize().height));
+        outerPanel.setBorder(BorderFactory.createEmptyBorder(7, 7, 7, 7));
 
-        // Get TimingType
         TimingType timing = Arrays.stream(TimingType.values())
                 .filter(t -> t.getLabel().equals(time))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Invalid timing: " + time));
 
-        // Title label (white text)
         JLabel titleLabel = new JLabel(time);
-        titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 36));
+        titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 26));
         titleLabel.setForeground(Color.WHITE);
-        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 10, 10, 0));
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 7, 7, 0));
+
         outerPanel.add(titleLabel, BorderLayout.NORTH);
 
-        // Inner white panel
         RoundedPanel innerPanel = new RoundedPanel(new BorderLayout(), Color.WHITE, CORNER_RADIUS);
-        innerPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
+        innerPanel.setBorder(BorderFactory.createEmptyBorder(11, 11, 11, 11));
 
-        // Medication settings
-        JPanel medicationPanel = new JPanel(new GridLayout(3, 1, 5, 0));
+        JPanel medicationPanel = new JPanel(new GridLayout(3, 1, 4, 0));
         medicationPanel.setOpaque(false);
 
         JSpinner[] spinners = new JSpinner[3];
+        String[] icons = {"🍎", "🐟", "🌷"};
+        Color[] colors = {
+                new Color(224, 63, 63), // #f25a5a
+                new Color(45, 114, 226), // #efc55b
+                new Color(232, 79, 166)  // #6952db
+        };
+
         for (int i = 0; i < 3; i++) {
-            JPanel row = new JPanel(new FlowLayout(FlowLayout.LEFT));
+            JPanel row = new JPanel();
+            row.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0)); // 中央揃えに変更
             row.setOpaque(false);
 
-            JLabel label = new JLabel("薬" + (i + 1) + ":");
+            // アイコンとくすりラベル
+            JLabel iconLabel = new JLabel(icons[i]);
+            iconLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 20));
+            iconLabel.setForeground(colors[i]);
+            row.add(iconLabel);
+
+            JLabel label = new JLabel("くすり" + (i + 1));
             label.setFont(baseFont);
             row.add(label);
 
+            // スピナーと単位ラベル
             spinners[i] = new CustomSpinner(new SpinnerNumberModel(amounts[i], 0, 10, 1));
-            spinners[i].setPreferredSize(new Dimension(80, spinners[i].getPreferredSize().height));
+            spinners[i].setPreferredSize(new Dimension(50, spinners[i].getPreferredSize().height));
+
+            JSpinner.NumberEditor editor = (JSpinner.NumberEditor)spinners[i].getEditor();
+            editor.getTextField().setForeground(colors[i]);
+            editor.getTextField().setFont(new Font(Font.DIALOG, Font.BOLD, 24));
+            row.add(spinners[i]);
 
             JLabel unitLabel = new JLabel("個");
             unitLabel.setFont(baseFont);
-
-            // Add spinner listener
-            final int pillNumber = i + 1;
-            spinners[i].addChangeListener(e -> {
-                int newAmount = (Integer) spinners[pillNumber - 1].getValue();
-                onMedicationAmountChanged(timing, pillNumber, newAmount);
-            });
-
-            row.add(spinners[i]);
             row.add(unitLabel);
+
             medicationPanel.add(row);
+
         }
 
         // Time settings panel
