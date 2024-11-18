@@ -43,8 +43,8 @@ public class FormMain extends JFrame {
     }
 
     // font size
-    private final Font baseFont = new Font(Font.DIALOG, Font.BOLD, (int)(12 * 1.2));
-    private final Font titleFont = new Font(Font.DIALOG, Font.BOLD, (int)(14 * 1.2));
+    private final Font baseFont = new Font("メイリオ", Font.BOLD, (int)(12 * 1.2));
+    private final Font titleFont = new Font("メイリオ", Font.BOLD, (int)(14 * 1.2));
     // corner radius
     private static final int CORNER_RADIUS = 15;
     // custom components
@@ -147,7 +147,7 @@ public class FormMain extends JFrame {
         }
 
         private void customize() {
-            setFont(new Font(Font.DIALOG, Font.BOLD, 24));
+            setFont(new Font("メイリオ", Font.BOLD, 24));
             setBorder(null);
 
             Color bgColor = Color.WHITE;
@@ -508,7 +508,7 @@ public class FormMain extends JFrame {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid timing: " + time));
 
         JLabel titleLabel = new JLabel(time);
-        titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 26));
+        titleLabel.setFont(new Font("メイリオ", Font.BOLD, (int)(20)));
         titleLabel.setForeground(Color.WHITE);
         titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 7, 7, 0));
 
@@ -530,31 +530,44 @@ public class FormMain extends JFrame {
 
         for (int i = 0; i < 3; i++) {
             JPanel row = new JPanel();
-            row.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0)); // 中央揃えに変更
+            row.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0)); // ベースの余白を0に
             row.setOpaque(false);
 
-            // アイコンとくすりラベル
+// アイコンとくすりラベルのコンテナ
+            JPanel iconLabelContainer = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0)); // アイコンとくすりの間を5に
+            iconLabelContainer.setOpaque(false);
+
             JLabel iconLabel = new JLabel(icons[i]);
             iconLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 20));
             iconLabel.setForeground(colors[i]);
-            row.add(iconLabel);
+            iconLabelContainer.add(iconLabel);
 
             JLabel label = new JLabel("くすり" + (i + 1));
             label.setFont(baseFont);
-            row.add(label);
+            iconLabelContainer.add(label);
 
-            // スピナーと単位ラベル
+            row.add(iconLabelContainer);
+
+// スペーサー追加（くすりラベルとスピナーの間）
+            row.add(Box.createHorizontalStrut(15));
+
+// スピナーと単位のコンテナ
+            JPanel spinnerUnitContainer = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0)); // スピナーと個の間を3に
+            spinnerUnitContainer.setOpaque(false);
+
             spinners[i] = new CustomSpinner(new SpinnerNumberModel(amounts[i], 0, 10, 1));
             spinners[i].setPreferredSize(new Dimension(50, spinners[i].getPreferredSize().height));
 
             JSpinner.NumberEditor editor = (JSpinner.NumberEditor)spinners[i].getEditor();
             editor.getTextField().setForeground(colors[i]);
-            editor.getTextField().setFont(new Font(Font.DIALOG, Font.BOLD, 24));
-            row.add(spinners[i]);
+            editor.getTextField().setFont(new Font("メイリオ", Font.BOLD, 24));
+            spinnerUnitContainer.add(spinners[i]);
 
             JLabel unitLabel = new JLabel("個");
             unitLabel.setFont(baseFont);
-            row.add(unitLabel);
+            spinnerUnitContainer.add(unitLabel);
+
+            row.add(spinnerUnitContainer);
 
             medicationPanel.add(row);
 
