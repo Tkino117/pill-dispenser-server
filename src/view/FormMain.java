@@ -244,6 +244,10 @@ public class FormMain extends JFrame {
         controller.cli.execute(command);
     }
 
+    public void onDispenseButtonClicked(TimingType timing) {
+        controller.cli.execute("dispense " + timing.pillSetName);
+    }
+
     private void setUIFont(javax.swing.plaf.FontUIResource f) {
         java.util.Enumeration<Object> keys = UIManager.getDefaults().keys();
         while (keys.hasMoreElements()) {
@@ -307,7 +311,7 @@ public class FormMain extends JFrame {
     public void addMedicationHistory(Intake intake) {
         int[] pills = {0, 0, 0};
         for (Pair<Integer, Integer> i : intake.getPills()) {
-            pills[i.getFirst() - 1] = i.getSecond();
+            pills[i.getFirst() - 1] += i.getSecond();
         }
         addMedicationHistory(intake.getTime().toLocalDate(), intake.getTime().toLocalTime(), pills);
     }
@@ -508,12 +512,7 @@ public class FormMain extends JFrame {
         dispenseButton.setFont(baseFont);
         dispenseButton.setBorder(BorderFactory.createEmptyBorder(8, 15, 8, 15));
         dispenseButton.addActionListener(e -> {
-            String currentTime = String.format("%02d:%02d:%02d",
-                    java.time.LocalTime.now().getHour(),
-                    java.time.LocalTime.now().getMinute(),
-                    java.time.LocalTime.now().getSecond());
-            JOptionPane.showMessageDialog(panel, time + "の薬を排出します\n排出時刻: " + currentTime);
-            controller.cli.execute("dispense " + timing.pillSetName);
+            onDispenseButtonClicked(timing);
         });
         dispensePanel.add(dispenseButton);
 

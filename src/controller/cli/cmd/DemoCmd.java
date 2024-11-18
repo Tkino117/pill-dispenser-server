@@ -17,16 +17,7 @@ public class DemoCmd extends Cmd {
     public void execute(List<String> args) {
         super.execute(args);
         if (args.isEmpty()) {
-            System.out.println("made demo pillset");
-            controller.cli.execute("pillset add pillset1");
-            controller.cli.execute("pillset add pillset2");
-            controller.cli.execute("pillset add pillset3");
-            controller.cli.execute("pillset edit pillset1 1 2");
-            controller.cli.execute("pillset edit pillset1 2 1");
-            controller.cli.execute("pillset edit pillset2 1 2");
-            controller.cli.execute("pillset edit pillset3 1 2");
-            controller.cli.execute("pillset edit pillset3 2 1");
-            controller.cli.execute("pillset edit pillset3 3 1");
+            System.out.println("demo cmd is now empty.");
         }
         else if (Objects.equals(args.get(0), "view")) {
             System.out.println("made demo view history");
