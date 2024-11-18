@@ -245,8 +245,8 @@ public class FormMain extends JFrame {
                 Color.WHITE, // デフォルトの背景色（グラデーションの場合は使用されません）
                 CORNER_RADIUS,
                 true, // グラデーションを使用
-                new Color(120, 120, 255), // グラデーション開始色
-                new Color(60, 60, 180)    // グラデーション終了色
+                new Color(150, 150, 170), // グラデーション開始色
+                new Color(110, 110, 140)    // グラデーション終了色
         );
         logoPanel.setBorder(BorderFactory.createEmptyBorder(25, 10, 5, 10));  // 上下のpaddingを15に調整
 
@@ -493,14 +493,13 @@ public class FormMain extends JFrame {
     }
 
     private JPanel createTimeSlotPanel(String time, String... medications) {
-        RoundedPanel borderedPanel = new RoundedPanel(new BorderLayout(), new Color(237, 237, 243), CORNER_RADIUS);
-        borderedPanel = new RoundedPanel(
+        RoundedPanel borderedPanel = new RoundedPanel(
                 new BorderLayout(),
                 Color.WHITE, // デフォルトの背景色（グラデーションの場合は使用されません）
                 CORNER_RADIUS,
                 true, // グラデーションを使用
-                new Color(232, 232, 237), // グラデーション開始色
-                new Color(220, 220, 225)    // グラデーション終了色
+                new Color(232, 232, 240), // グラデーション開始色
+                new Color(228, 228, 234)    // グラデーション終了色
         );
         borderedPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         borderedPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, borderedPanel.getPreferredSize().height));
@@ -640,7 +639,17 @@ public class FormMain extends JFrame {
 
         outerPanel.add(titleLabel, BorderLayout.NORTH);
 
-        RoundedPanel innerPanel = new RoundedPanel(new BorderLayout(), Color.WHITE, CORNER_RADIUS);
+        Color panelColorInner = getTimingColorInner(time);
+        Color panelColorInner2 = getTimingColorInner2(time);
+
+        RoundedPanel innerPanel = new RoundedPanel(
+                new BorderLayout(),
+                panelColor2,
+                CORNER_RADIUS,
+                true, // グラデーションを使用
+                panelColorInner2, // グラデーション開始色
+                panelColorInner    // グラデーション終了色
+        );
         innerPanel.setBorder(BorderFactory.createEmptyBorder(11, 11, 11, 11));
 
         // メディケーションパネルを BoxLayout に変更
@@ -756,6 +765,23 @@ public class FormMain extends JFrame {
             case "朝": return new Color(252, 110, 110);  // Morning red
             case "昼": return new Color(245, 207, 130); // Noon orange
             case "夜": return new Color(115, 92, 229);  // Night blue
+            default: return Color.GRAY;
+        }
+    }
+
+    private Color getTimingColorInner(String time) {
+        switch (time) {
+            case "朝": return new Color(255, 250, 250);  // Morning red
+            case "昼": return new Color(255, 255, 235); // Noon orange
+            case "夜": return new Color(245, 245, 255);  // Night blue
+            default: return Color.GRAY;
+        }
+    }
+    private Color getTimingColorInner2(String time) {
+        switch (time) {
+            case "朝": return new Color(255, 255, 255);  // Morning red
+            case "昼": return new Color(255, 255, 255); // Noon orange
+            case "夜": return new Color(255, 255, 255);  // Night blue
             default: return Color.GRAY;
         }
     }
