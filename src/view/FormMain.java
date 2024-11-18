@@ -414,11 +414,32 @@ public class FormMain extends JFrame {
         RoundedPanel panel = new RoundedPanel(new BorderLayout(), Color.WHITE, CORNER_RADIUS);
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
+        // 日付と曜日を含むパネル
+        JPanel headerPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        headerPanel.setOpaque(false);
+
         JLabel dateLabel = new JLabel(date);
         dateLabel.setFont(titleFont);
-        dateLabel.setHorizontalAlignment(JLabel.CENTER);
-        dateLabel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
-        panel.add(dateLabel, BorderLayout.NORTH);
+
+        LocalDate localDate = LocalDate.of(2024, 11, Integer.parseInt(date.split("/")[1]));
+        String dayOfWeek = switch (localDate.getDayOfWeek()) {
+            case MONDAY -> "（月）";
+            case TUESDAY -> "（火）";
+            case WEDNESDAY -> "（水）";
+            case THURSDAY -> "（木）";
+            case FRIDAY -> "（金）";
+            case SATURDAY -> "（土）";
+            case SUNDAY -> "（日）";
+        };
+
+        JLabel dowLabel = new JLabel(dayOfWeek);
+        dowLabel.setFont(titleFont);
+
+        headerPanel.add(dateLabel);
+        headerPanel.add(dowLabel);
+        headerPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+
+        panel.add(headerPanel, BorderLayout.NORTH);
 
         JPanel timeSlots = new JPanel();
         timeSlots.setLayout(new BoxLayout(timeSlots, BoxLayout.Y_AXIS));
@@ -458,8 +479,8 @@ public class FormMain extends JFrame {
     private JPanel createSettingsPanel() {
         // Create container panel
         JPanel containerPanel = new JPanel(new BorderLayout());
-        containerPanel.setPreferredSize(new Dimension(330, 0));
-        containerPanel.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 0));
+        containerPanel.setPreferredSize(new Dimension(303, 0));
+        containerPanel.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 7));
         containerPanel.setOpaque(false);
 
         // Create panel for timing settings
@@ -495,6 +516,53 @@ public class FormMain extends JFrame {
 
         return containerPanel;
     }
+    private JPanel createMedicationRow(int index, String icon, Color color, int amount, TimingType timing) {
+        JPanel row = new JPanel();
+        row.setLayout(new FlowLayout(FlowLayout.CENTER, 0, -2));
+        row.setOpaque(false);
+
+        // アイコンとくすりラベルのコンテナ
+        JPanel iconLabelContainer = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        iconLabelContainer.setOpaque(false);
+
+        JLabel iconLabel = new JLabel(icon);
+        iconLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 20));
+        iconLabel.setForeground(color);
+        iconLabelContainer.add(iconLabel);
+
+        JLabel label = new JLabel("くすり" + (index + 1));
+        label.setFont(baseFont);
+        iconLabelContainer.add(label);
+
+        row.add(iconLabelContainer);
+        row.add(Box.createHorizontalStrut(15));
+
+        // スピナーと単位のコンテナ
+        JPanel spinnerUnitContainer = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
+        spinnerUnitContainer.setOpaque(false);
+
+        JSpinner spinner = new CustomSpinner(new SpinnerNumberModel(amount, 0, 10, 1));
+        spinner.setPreferredSize(new Dimension(50, spinner.getPreferredSize().height));
+
+        JSpinner.NumberEditor editor = (JSpinner.NumberEditor)spinner.getEditor();
+        editor.getTextField().setForeground(color);
+        editor.getTextField().setFont(new Font("メイリオ", Font.BOLD, 24));
+
+        final int pillNumber = index + 1;
+        spinner.addChangeListener(e -> {
+            int newAmount = (Integer) ((JSpinner)e.getSource()).getValue();
+            onMedicationAmountChanged(timing, pillNumber, newAmount);
+        });
+        spinnerUnitContainer.add(spinner);
+
+        JLabel unitLabel = new JLabel("個");
+        unitLabel.setFont(baseFont);
+        spinnerUnitContainer.add(unitLabel);
+
+        row.add(spinnerUnitContainer);
+
+        return row;
+    }
 
     private JPanel createTimeSetting(String time, int[] amounts, int hour, int minute) {
         Color panelColor = getTimingColor(time);
@@ -516,67 +584,31 @@ public class FormMain extends JFrame {
 
         RoundedPanel innerPanel = new RoundedPanel(new BorderLayout(), Color.WHITE, CORNER_RADIUS);
         innerPanel.setBorder(BorderFactory.createEmptyBorder(11, 11, 11, 11));
-        innerPanel.setPreferredSize(new Dimension(200, 280));
 
-        JPanel medicationPanel = new JPanel(new GridLayout(3, 1, 4, 0));
+        // メディケーションパネルを BoxLayout に変更
+        JPanel medicationPanel = new JPanel();
+        medicationPanel.setLayout(new BoxLayout(medicationPanel, BoxLayout.Y_AXIS));
         medicationPanel.setOpaque(false);
+        medicationPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 5));
 
-        JSpinner[] spinners = new JSpinner[3];
         String[] icons = {"🍎", "🐟", "🌷"};
         Color[] colors = {
-                new Color(224, 63, 63), // #f25a5a
-                new Color(45, 114, 226), // #efc55b
-                new Color(232, 79, 166)  // #6952db
+                new Color(224, 63, 63),
+                new Color(45, 114, 226),
+                new Color(232, 79, 166)
         };
 
+        // くすりの行と区切り線を追加
         for (int i = 0; i < 3; i++) {
-            JPanel row = new JPanel();
-            row.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0)); // ベースの余白を0に
-            row.setOpaque(false);
+            medicationPanel.add(createMedicationRow(i, icons[i], colors[i], amounts[i], timing));
 
-            // アイコンとくすりラベルのコンテナ
-            JPanel iconLabelContainer = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0)); // アイコンとくすりの間を5に
-            iconLabelContainer.setOpaque(false);
-
-            JLabel iconLabel = new JLabel(icons[i]);
-            iconLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 20));
-            iconLabel.setForeground(colors[i]);
-            iconLabelContainer.add(iconLabel);
-
-            JLabel label = new JLabel("くすり" + (i + 1));
-            label.setFont(baseFont);
-            iconLabelContainer.add(label);
-
-            row.add(iconLabelContainer);
-
-            // スペーサー追加（くすりラベルとスピナーの間）
-            row.add(Box.createHorizontalStrut(15));
-
-            // スピナーと単位のコンテナ
-            JPanel spinnerUnitContainer = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0)); // スピナーと個の間を3に
-            spinnerUnitContainer.setOpaque(false);
-
-            spinners[i] = new CustomSpinner(new SpinnerNumberModel(amounts[i], 0, 10, 1));
-            spinners[i].setPreferredSize(new Dimension(50, spinners[i].getPreferredSize().height));
-
-            JSpinner.NumberEditor editor = (JSpinner.NumberEditor)spinners[i].getEditor();
-            editor.getTextField().setForeground(colors[i]);
-            editor.getTextField().setFont(new Font("メイリオ", Font.BOLD, 24));
-            final int pillNumber = i + 1;  // この行を追加
-            spinners[i].addChangeListener(e -> {
-                int newAmount = (Integer) ((JSpinner)e.getSource()).getValue();
-                onMedicationAmountChanged(timing, pillNumber, newAmount);
-            });
-            spinnerUnitContainer.add(spinners[i]);
-
-            JLabel unitLabel = new JLabel("個");
-            unitLabel.setFont(baseFont);
-            spinnerUnitContainer.add(unitLabel);
-
-            row.add(spinnerUnitContainer);
-
-            medicationPanel.add(row);
-
+            if (i < 2) {
+                JSeparator separator = new JSeparator(JSeparator.HORIZONTAL);
+                separator.setForeground(new Color(230, 230, 230));
+                medicationPanel.add(Box.createRigidArea(new Dimension(0, 2)));  // 区切り線の上に少し空間
+                medicationPanel.add(separator);
+                medicationPanel.add(Box.createRigidArea(new Dimension(0, 2)));  // 区切り線の下に少し空間
+            }
         }
 
         // Time settings panel
@@ -584,9 +616,10 @@ public class FormMain extends JFrame {
         southPanel.setLayout(new BoxLayout(southPanel, BoxLayout.Y_AXIS));
         southPanel.setOpaque(false);
 
-        JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel timePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
         timePanel.setOpaque(false);
         timePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        timePanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, timePanel.getPreferredSize().height));
 
         JCheckBox dailyCheck = new JCheckBox("毎日");
         dailyCheck.setFont(baseFont);
@@ -594,19 +627,17 @@ public class FormMain extends JFrame {
 
         JSpinner hourSpinner = new CustomSpinner(new SpinnerNumberModel(hour, 0, 23, 1));
         hourSpinner.setPreferredSize(new Dimension(55, hourSpinner.getPreferredSize().height));
-        hourSpinner.setFont(baseFont);
+
         JSpinner minuteSpinner = new CustomSpinner(new SpinnerNumberModel(minute, 0, 59, 1));
         minuteSpinner.setPreferredSize(new Dimension(55, minuteSpinner.getPreferredSize().height));
-        minuteSpinner.setFont(baseFont);
 
-        JLabel hourLabel = new JLabel("時 ");
-        hourLabel.setFont(new Font("メイリオ", Font.BOLD, 20));  // フォントサイズを20に変更
+        JLabel hourLabel = new JLabel("時");
+        hourLabel.setFont(new Font("メイリオ", Font.BOLD, 20));
 
         JLabel minuteLabel = new JLabel("分");
-        minuteLabel.setFont(new Font("メイリオ", Font.BOLD, 20));  // フォントサイズを20に変更
+        minuteLabel.setFont(new Font("メイリオ", Font.BOLD, 20));
 
-        // Medication label panel with right alignment
-        JPanel medicationLabelPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel medicationLabelPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 9, 0));
         medicationLabelPanel.setOpaque(false);
         medicationLabelPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
@@ -614,7 +645,6 @@ public class FormMain extends JFrame {
         medicationLabel.setFont(baseFont);
         medicationLabelPanel.add(medicationLabel);
 
-        // Add time setting listeners
         ChangeListener scheduleChangeListener = e -> {
             boolean isDaily = dailyCheck.isSelected();
             int h = (Integer) hourSpinner.getValue();
@@ -632,7 +662,6 @@ public class FormMain extends JFrame {
         timePanel.add(minuteSpinner);
         timePanel.add(minuteLabel);
 
-        // Dispense button panel
         JPanel dispensePanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         dispensePanel.setOpaque(false);
         dispensePanel.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -643,9 +672,8 @@ public class FormMain extends JFrame {
         dispenseButton.addActionListener(e -> onDispenseButtonClicked(timing));
         dispensePanel.add(dispenseButton);
 
-        // Combine panels
         southPanel.add(timePanel);
-        southPanel.add(medicationLabelPanel);  // Add the new label panel
+        southPanel.add(medicationLabelPanel);
         southPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         southPanel.add(dispensePanel);
 
@@ -659,9 +687,9 @@ public class FormMain extends JFrame {
 
     private Color getTimingColor(String time) {
         switch (time) {
-            case "朝": return new Color(255, 69, 58);  // Morning red
-            case "昼": return new Color(255, 159, 10); // Noon orange
-            case "夜": return new Color(94, 92, 230);  // Night blue
+            case "朝": return new Color(242, 90, 90);  // Morning red
+            case "昼": return new Color(239, 197, 91); // Noon orange
+            case "夜": return new Color(105, 82, 219);  // Night blue
             default: return Color.GRAY;
         }
     }
