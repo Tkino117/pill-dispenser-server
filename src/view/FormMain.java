@@ -6,6 +6,7 @@ import model.history.Intake;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicButtonUI;
 import java.awt.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -137,6 +138,70 @@ public class FormMain extends JFrame {
             g2.drawString(getText(), x, y);
 
             g2.dispose();
+        }
+    }
+    private class CustomSpinner extends JSpinner {
+        public CustomSpinner(SpinnerNumberModel model) {
+            super(model);
+            customize();
+        }
+
+        private void customize() {
+            setFont(new Font(Font.DIALOG, Font.BOLD, 24));
+            setBorder(null);
+
+            Color bgColor = Color.WHITE;
+            setBackground(bgColor);
+
+            // エディタのカスタマイズ
+            JSpinner.NumberEditor editor = (JSpinner.NumberEditor)getEditor();
+            JTextField textField = editor.getTextField();
+            textField.setBorder(null);
+            textField.setFont(getFont());
+            textField.setHorizontalAlignment(JTextField.CENTER);
+            textField.setBackground(bgColor);
+
+            // 矢印ボタンのカスタマイズ
+            replaceArrowButtons();
+        }
+
+        private void replaceArrowButtons() {
+            for (Component c : getComponents()) {
+                if (c instanceof JButton) {
+                    JButton button = (JButton) c;
+                    button.setBorderPainted(false);
+                    button.setContentAreaFilled(false);
+                    button.setFocusPainted(false);
+                    button.setBackground(Color.WHITE);
+
+                    // シンプルな矢印を描画
+                    button.setUI(new BasicButtonUI() {
+                        @Override
+                        public void paint(Graphics g, JComponent c) {
+                            Graphics2D g2 = (Graphics2D) g.create();
+                            g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                                    RenderingHints.VALUE_ANTIALIAS_ON);
+
+                            int w = c.getWidth();
+                            int h = c.getHeight();
+
+                            g2.setColor(new Color(100, 100, 100));
+
+                            // ボタンの種類に応じて矢印を描画
+                            if (button.getName().contains("Up")) {
+                                int[] xPoints = {w/4, w/2, 3*w/4};
+                                int[] yPoints = {2*h/3, h/3, 2*h/3};
+                                g2.fillPolygon(xPoints, yPoints, 3);
+                            } else {
+                                int[] xPoints = {w/4, w/2, 3*w/4};
+                                int[] yPoints = {h/3, 2*h/3, h/3};
+                                g2.fillPolygon(xPoints, yPoints, 3);
+                            }
+                            g2.dispose();
+                        }
+                    });
+                }
+            }
         }
     }
 
@@ -470,8 +535,7 @@ public class FormMain extends JFrame {
             label.setFont(baseFont);
             row.add(label);
 
-            spinners[i] = new JSpinner(new SpinnerNumberModel(amounts[i], 0, 10, 1));
-            spinners[i].setFont(baseFont);
+            spinners[i] = new CustomSpinner(new SpinnerNumberModel(amounts[i], 0, 10, 1));
             spinners[i].setPreferredSize(new Dimension(80, spinners[i].getPreferredSize().height));
 
             JLabel unitLabel = new JLabel("個");
@@ -502,10 +566,13 @@ public class FormMain extends JFrame {
         dailyCheck.setFont(baseFont);
         dailyCheck.setOpaque(false);
 
-        JSpinner hourSpinner = new JSpinner(new SpinnerNumberModel(hour, 0, 23, 1));
+        JSpinner hourSpinner = new CustomSpinner(new SpinnerNumberModel(hour, 0, 23, 1));
         hourSpinner.setFont(baseFont);
-        JSpinner minuteSpinner = new JSpinner(new SpinnerNumberModel(minute, 0, 59, 1));
+        JSpinner minuteSpinner = new CustomSpinner(new SpinnerNumberModel(minute, 0, 59, 1));
         minuteSpinner.setFont(baseFont);
+
+
+
 
         JLabel hourLabel = new JLabel("時");
         hourLabel.setFont(baseFont);
