@@ -51,6 +51,9 @@ public class FormMain extends JFrame {
     private class RoundedPanel extends JPanel {
         private Color backgroundColor;
         private int radius;
+        private boolean useGradient = false;
+        private Color gradientStartColor;
+        private Color gradientEndColor;
 
         public RoundedPanel(LayoutManager layout, Color bgColor, int radius) {
             super(layout);
@@ -59,12 +62,34 @@ public class FormMain extends JFrame {
             setOpaque(false);
         }
 
+        // 新しいコンストラクタを追加
+        public RoundedPanel(LayoutManager layout, Color bgColor, int radius, boolean useGradient, Color gradientStart, Color gradientEnd) {
+            super(layout);
+            this.backgroundColor = bgColor;
+            this.radius = radius;
+            this.useGradient = useGradient;
+            this.gradientStartColor = gradientStart;
+            this.gradientEndColor = gradientEnd;
+            setOpaque(false);
+        }
+
+        // paintComponent メソッドを修正
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             Graphics2D g2 = (Graphics2D) g.create();
             g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2.setColor(backgroundColor);
+
+            if (useGradient) {
+                GradientPaint gradient = new GradientPaint(
+                        0, 0, gradientStartColor,
+                        getWidth(), getHeight(), gradientEndColor
+                );
+                g2.setPaint(gradient);
+            } else {
+                g2.setColor(backgroundColor);
+            }
+
             g2.fillRoundRect(0, 0, getWidth()-1, getHeight()-1, radius, radius);
             g2.dispose();
         }
@@ -215,7 +240,14 @@ public class FormMain extends JFrame {
         setUIFont(new javax.swing.plaf.FontUIResource(baseFont));
 
         // logo panle
-        RoundedPanel logoPanel = new RoundedPanel(new BorderLayout(), new Color(135, 135, 150), CORNER_RADIUS);
+        RoundedPanel logoPanel = new RoundedPanel(
+                new BorderLayout(),
+                Color.WHITE, // デフォルトの背景色（グラデーションの場合は使用されません）
+                CORNER_RADIUS,
+                true, // グラデーションを使用
+                new Color(120, 120, 255), // グラデーション開始色
+                new Color(60, 60, 180)    // グラデーション終了色
+        );
         logoPanel.setBorder(BorderFactory.createEmptyBorder(25, 10, 5, 10));  // 上下のpaddingを15に調整
 
         JPanel centeringPanel = new JPanel(new GridBagLayout());  // GridBagLayoutで中央寄せ
@@ -462,6 +494,14 @@ public class FormMain extends JFrame {
 
     private JPanel createTimeSlotPanel(String time, String... medications) {
         RoundedPanel borderedPanel = new RoundedPanel(new BorderLayout(), new Color(237, 237, 243), CORNER_RADIUS);
+        borderedPanel = new RoundedPanel(
+                new BorderLayout(),
+                Color.WHITE, // デフォルトの背景色（グラデーションの場合は使用されません）
+                CORNER_RADIUS,
+                true, // グラデーションを使用
+                new Color(232, 232, 237), // グラデーション開始色
+                new Color(220, 220, 225)    // グラデーション終了色
+        );
         borderedPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         borderedPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, borderedPanel.getPreferredSize().height));
 
@@ -575,8 +615,17 @@ public class FormMain extends JFrame {
 
     private JPanel createTimeSetting(String time, int[] amounts, int hour, int minute) {
         Color panelColor = getTimingColor(time);
+        Color panelColor2 = getTimingColor2(time);
 
         RoundedPanel outerPanel = new RoundedPanel(new BorderLayout(), panelColor, CORNER_RADIUS);
+        outerPanel = new RoundedPanel(
+                new BorderLayout(),
+                panelColor2,
+                CORNER_RADIUS,
+                true, // グラデーションを使用
+                panelColor2, // グラデーション開始色
+                panelColor    // グラデーション終了色
+        );
         outerPanel.setBorder(BorderFactory.createEmptyBorder(7, 7, 7, 7));
 
         TimingType timing = Arrays.stream(TimingType.values())
@@ -696,9 +745,17 @@ public class FormMain extends JFrame {
 
     private Color getTimingColor(String time) {
         switch (time) {
-            case "朝": return new Color(242, 90, 90);  // Morning red
-            case "昼": return new Color(239, 197, 91); // Noon orange
-            case "夜": return new Color(105, 82, 219);  // Night blue
+            case "朝": return new Color(240, 85, 85);  // Morning red
+            case "昼": return new Color(227, 183, 80); // Noon orange
+            case "夜": return new Color(85, 62, 189);  // Night blue
+            default: return Color.GRAY;
+        }
+    }
+    private Color getTimingColor2(String time) {
+        switch (time) {
+            case "朝": return new Color(252, 110, 110);  // Morning red
+            case "昼": return new Color(245, 207, 130); // Noon orange
+            case "夜": return new Color(115, 92, 229);  // Night blue
             default: return Color.GRAY;
         }
     }
