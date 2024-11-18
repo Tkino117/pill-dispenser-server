@@ -32,6 +32,7 @@ public class CLI implements Runnable {
         registry.registerCmd("demo", new DemoCmd("demo", controller));
         registry.registerCmd("dispense", new DispenseCmd("dispense", controller));
         registry.registerCmd("exit", new ExitCmd("exit", controller));
+        registry.registerCmd("form", new FormCmd("form", controller));
         registry.registerCmd("help", new HelpCmd("help", controller));
         registry.registerCmd("history", new HistoryCmd("history", controller));
         registry.registerCmd("pillset", new PillSetCmd("pillset", controller));
@@ -42,6 +43,7 @@ public class CLI implements Runnable {
         registry.registerCmd("take", new TakeCmd("take", controller));
         registry.registerCmd("test", new TestCmd("test", controller));
         registry.registerCmd("track", new TrackCmd("track", controller));
+        registry.registerCmd("view", new ViewCmd("view", controller));
         // register omissions here!
         omissionMap.put("dis", "dispense");
         omissionMap.put("q", "exit");

@@ -18,22 +18,28 @@ public class DemoCmd extends Cmd {
         super.execute(args);
         if (args.isEmpty()) {
             System.out.println("made demo pillset");
-            controller.cli.execute("pillset add morning");
-            controller.cli.execute("pillset add afternoon");
-            controller.cli.execute("pillset add evening");
-            controller.cli.execute("pillset edit morning 1 2");
-            controller.cli.execute("pillset edit morning 2 1");
-            controller.cli.execute("pillset edit afternoon 1 2");
-            controller.cli.execute("pillset edit evening 1 2");
-            controller.cli.execute("pillset edit evening 2 1");
-            controller.cli.execute("pillset edit evening 3 1");
+            controller.cli.execute("pillset add pillset1");
+            controller.cli.execute("pillset add pillset2");
+            controller.cli.execute("pillset add pillset3");
+            controller.cli.execute("pillset edit pillset1 1 2");
+            controller.cli.execute("pillset edit pillset1 2 1");
+            controller.cli.execute("pillset edit pillset2 1 2");
+            controller.cli.execute("pillset edit pillset3 1 2");
+            controller.cli.execute("pillset edit pillset3 2 1");
+            controller.cli.execute("pillset edit pillset3 3 1");
+        }
+        else if (Objects.equals(args.get(0), "view")) {
+            System.out.println("made demo view history");
+            if (controller.view != null) {
+                controller.view.formMain.demoHistory();
+            }
         }
         else if (Objects.equals(args.get(0), "sch") || Objects.equals(args.get(0), "schedule")) {
             System.out.println("made demo schedule");
-//            controller.cli.execute("schedule once s_morning morning 30");
-            controller.cli.execute("schedule repeat sr_morning morning 2 30");
-//            controller.cli.execute("schedule repeat sr_afternoon afternoon 12 30");
-//            controller.cli.execute("schedule repeat sr_evening evening 22 30");
+            controller.cli.execute("schedule once s_1 pillset1 60");
+            controller.cli.execute("schedule repeat sc_1 pillset1 2 30");
+            controller.cli.execute("schedule repeat sc_2 pillset2 12 30");
+            controller.cli.execute("schedule repeat sc_3 pillset3 22 30");
         }
         else if (Objects.equals(args.get(0), "debug")) {
             System.out.println("Start to execute all commands for debugging. Are you sure? (y/n)");

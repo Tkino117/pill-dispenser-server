@@ -14,7 +14,7 @@ public class PillSet {
         }
     }
     public int getCount(int id) {
-        return pills.get(id);
+        return pills.getOrDefault(id, 0);
     }
     public void setCount(int id, int count) {
         if (count < 0) {

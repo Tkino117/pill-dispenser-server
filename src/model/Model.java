@@ -19,7 +19,7 @@ public class Model {
         this.controller = controller;
         pillSets = new PillSets();
         history = new PillHistory();
-        pillTracker = new PillTracker(history);
+        pillTracker = new PillTracker(history, controller);
         server = new ServerManager(port, pillSets, pillTracker, this);
         alarm = new AlarmManager(server);
     }

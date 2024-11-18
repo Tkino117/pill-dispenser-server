@@ -20,6 +20,6 @@ public abstract class Cmd implements ICmd {
 
     @Override
     public void execute(List<String> args) {
-//        System.out.println(name + " command executed with args : " + args);
+        System.out.println(name + " command executed with args : " + args);
     }
 }

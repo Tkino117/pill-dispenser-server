@@ -84,15 +84,18 @@ public class AlarmManager {
             server.dispensePillSet(pillSet);
         };
     }
-    public boolean cancelTask(String id) {
+    public boolean cancelTask(String id, boolean displayLog) {
         ScheduledFuture<?> future = tasks.get(id);
         if (future != null) {
             future.cancel(true);
             tasks.remove(id);
             return true;
         }
-        System.out.println("ERROR : No such task. id : " + id);
+        if (displayLog) System.out.println("ERROR : No such task. id : " + id);
         return false;
+    }
+    public boolean cancelTask(String id) {
+        return cancelTask(id, true);
     }
     public void shutdown() {
         scheduler.shutdown();
