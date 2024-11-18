@@ -158,7 +158,7 @@ public class FormMain extends JFrame {
             JTextField textField = editor.getTextField();
             textField.setBorder(null);
             textField.setFont(getFont());
-            textField.setHorizontalAlignment(JTextField.CENTER);
+            textField.setHorizontalAlignment(JTextField.RIGHT);
             textField.setBackground(bgColor);
 
             // 矢印ボタンのカスタマイズ
@@ -516,6 +516,7 @@ public class FormMain extends JFrame {
 
         RoundedPanel innerPanel = new RoundedPanel(new BorderLayout(), Color.WHITE, CORNER_RADIUS);
         innerPanel.setBorder(BorderFactory.createEmptyBorder(11, 11, 11, 11));
+        innerPanel.setPreferredSize(new Dimension(200, 280));
 
         JPanel medicationPanel = new JPanel(new GridLayout(3, 1, 4, 0));
         medicationPanel.setOpaque(false);
@@ -533,7 +534,7 @@ public class FormMain extends JFrame {
             row.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0)); // ベースの余白を0に
             row.setOpaque(false);
 
-// アイコンとくすりラベルのコンテナ
+            // アイコンとくすりラベルのコンテナ
             JPanel iconLabelContainer = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0)); // アイコンとくすりの間を5に
             iconLabelContainer.setOpaque(false);
 
@@ -548,10 +549,10 @@ public class FormMain extends JFrame {
 
             row.add(iconLabelContainer);
 
-// スペーサー追加（くすりラベルとスピナーの間）
+            // スペーサー追加（くすりラベルとスピナーの間）
             row.add(Box.createHorizontalStrut(15));
 
-// スピナーと単位のコンテナ
+            // スピナーと単位のコンテナ
             JPanel spinnerUnitContainer = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0)); // スピナーと個の間を3に
             spinnerUnitContainer.setOpaque(false);
 
@@ -561,6 +562,11 @@ public class FormMain extends JFrame {
             JSpinner.NumberEditor editor = (JSpinner.NumberEditor)spinners[i].getEditor();
             editor.getTextField().setForeground(colors[i]);
             editor.getTextField().setFont(new Font("メイリオ", Font.BOLD, 24));
+            final int pillNumber = i + 1;  // この行を追加
+            spinners[i].addChangeListener(e -> {
+                int newAmount = (Integer) ((JSpinner)e.getSource()).getValue();
+                onMedicationAmountChanged(timing, pillNumber, newAmount);
+            });
             spinnerUnitContainer.add(spinners[i]);
 
             JLabel unitLabel = new JLabel("個");
@@ -587,17 +593,26 @@ public class FormMain extends JFrame {
         dailyCheck.setOpaque(false);
 
         JSpinner hourSpinner = new CustomSpinner(new SpinnerNumberModel(hour, 0, 23, 1));
+        hourSpinner.setPreferredSize(new Dimension(55, hourSpinner.getPreferredSize().height));
         hourSpinner.setFont(baseFont);
         JSpinner minuteSpinner = new CustomSpinner(new SpinnerNumberModel(minute, 0, 59, 1));
+        minuteSpinner.setPreferredSize(new Dimension(55, minuteSpinner.getPreferredSize().height));
         minuteSpinner.setFont(baseFont);
 
+        JLabel hourLabel = new JLabel("時 ");
+        hourLabel.setFont(new Font("メイリオ", Font.BOLD, 20));  // フォントサイズを20に変更
 
+        JLabel minuteLabel = new JLabel("分");
+        minuteLabel.setFont(new Font("メイリオ", Font.BOLD, 20));  // フォントサイズを20に変更
 
+        // Medication label panel with right alignment
+        JPanel medicationLabelPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        medicationLabelPanel.setOpaque(false);
+        medicationLabelPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel hourLabel = new JLabel("時");
-        hourLabel.setFont(baseFont);
-        JLabel minuteLabel = new JLabel("分に服用");
-        minuteLabel.setFont(baseFont);
+        JLabel medicationLabel = new JLabel("に服用");
+        medicationLabel.setFont(baseFont);
+        medicationLabelPanel.add(medicationLabel);
 
         // Add time setting listeners
         ChangeListener scheduleChangeListener = e -> {
@@ -630,6 +645,7 @@ public class FormMain extends JFrame {
 
         // Combine panels
         southPanel.add(timePanel);
+        southPanel.add(medicationLabelPanel);  // Add the new label panel
         southPanel.add(Box.createRigidArea(new Dimension(0, 5)));
         southPanel.add(dispensePanel);
 
