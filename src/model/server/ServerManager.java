@@ -60,7 +60,7 @@ public class ServerManager {
         dispensePill(pillId, count, true);
     }
     public void dispensePillSet(PillSet pillSet) {
-        if (pillTracker.isEmpty()) {
+        if (!pillTracker.isEmpty()) {
             int result = JOptionPane.showConfirmDialog(
                     null,
                     "薬の飲み残しがあります。排出しますか？",
