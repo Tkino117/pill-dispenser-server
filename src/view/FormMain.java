@@ -42,8 +42,8 @@ public class FormMain extends JFrame {
     }
 
     // font size
-    private final Font baseFont = new Font(Font.DIALOG, Font.BOLD, (int)(12 * 1.5));
-    private final Font titleFont = new Font(Font.DIALOG, Font.BOLD, (int)(14 * 1.5));
+    private final Font baseFont = new Font(Font.DIALOG, Font.BOLD, (int)(12 * 1.2));
+    private final Font titleFont = new Font(Font.DIALOG, Font.BOLD, (int)(14 * 1.2));
     // corner radius
     private static final int CORNER_RADIUS = 15;
     // custom components
@@ -194,7 +194,7 @@ public class FormMain extends JFrame {
 
         add(mainPanel);
 
-        setSize(1600, 1003);
+        setSize(1400, 850);
         setLocationRelativeTo(null);
     }
 
@@ -327,8 +327,8 @@ public class FormMain extends JFrame {
         mainScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
         mainScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        adjustScrollSpeed(mainScrollPane.getVerticalScrollBar(), 50, 200);
-        adjustScrollSpeed(mainScrollPane.getHorizontalScrollBar(), 50, 200);
+        adjustScrollSpeed(mainScrollPane.getVerticalScrollBar(), 50, 30);
+        adjustScrollSpeed(mainScrollPane.getHorizontalScrollBar(), 50, 30);
 
         LocalDate currentDate = startDate;
         while (!currentDate.isAfter(endDate)) {
@@ -398,7 +398,7 @@ public class FormMain extends JFrame {
             int p2 = controller.model.pillSets.getPillSet(timing.pillSetName).getCount(2);
             int p3 = controller.model.pillSets.getPillSet(timing.pillSetName).getCount(3);
             panel.add(createTimeSetting(timing.getLabel(), new int[]{p1, p2, p3}, timing.defaultHour, timing.defaultMinute));
-            panel.add(Box.createRigidArea(new Dimension(0, 3)));
+            panel.add(Box.createRigidArea(new Dimension(0, 5)));
         }
 
         panel.add(Box.createVerticalGlue());
@@ -408,7 +408,7 @@ public class FormMain extends JFrame {
 
     private JPanel createTimeSetting(String time, int[] amounts, int hour, int minute) {
         RoundedPanel panel = new RoundedPanel(new BorderLayout(), Color.WHITE, CORNER_RADIUS);
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        panel.setBorder(BorderFactory.createEmptyBorder(3, 10, 3, 10));
         panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, panel.getPreferredSize().height));
 
         // TimingType
@@ -427,7 +427,7 @@ public class FormMain extends JFrame {
         // Spinners
         JSpinner[] spinners = new JSpinner[3];
 
-        JPanel medicationPanel = new JPanel(new GridLayout(3, 1, 5, 5));
+        JPanel medicationPanel = new JPanel(new GridLayout(3, 1, 5, 0));
         medicationPanel.setOpaque(false);
 
         for (int i = 0; i < 3; i++) {
