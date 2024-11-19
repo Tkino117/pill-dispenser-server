@@ -80,6 +80,7 @@ public class ServerManager {
         for (int i = 0; i < pillSet.PILLCOUNT; i++) {
             dispensePill(i + 1, pillSet.getCount(i + 1), false);
         }
+
     }
     public void dispensePillSet(String pillSetId) {
         PillSet pillSet = pillSets.getPillSet(pillSetId);
