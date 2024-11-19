@@ -242,11 +242,11 @@ public class FormMain extends JFrame {
         // logo panle
         RoundedPanel logoPanel = new RoundedPanel(
                 new BorderLayout(),
-                Color.WHITE, // デフォルトの背景色（グラデーションの場合は使用されません）
+                Color.WHITE,
                 CORNER_RADIUS,
-                true, // グラデーションを使用
-                new Color(150, 150, 170), // グラデーション開始色
-                new Color(110, 110, 140)    // グラデーション終了色
+                true,
+                new Color(170, 170, 180),
+                new Color(90, 90, 110)
         );
         logoPanel.setBorder(BorderFactory.createEmptyBorder(25, 10, 5, 10));  // 上下のpaddingを15に調整
 
@@ -255,7 +255,7 @@ public class FormMain extends JFrame {
 
         JLabel logoLabel = new JLabel("Smart Pill Dispenser");
         logoLabel.setFont(new Font("Yu Gothic", Font.BOLD, 36));
-        logoLabel.setForeground(Color.WHITE);
+        logoLabel.setForeground(new Color(240, 240, 250));
 
         centeringPanel.add(logoLabel);
         logoPanel.add(centeringPanel, BorderLayout.CENTER);
