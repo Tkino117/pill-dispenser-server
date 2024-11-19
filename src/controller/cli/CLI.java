@@ -29,6 +29,7 @@ public class CLI implements Runnable {
         registry = new CmdRegistry();
         omissionMap = new HashMap<>();
         // register commands here!
+        registry.registerCmd("alert", new AlertCmd("alert", controller));
         registry.registerCmd("demo", new DemoCmd("demo", controller));
         registry.registerCmd("dispense", new DispenseCmd("dispense", controller));
         registry.registerCmd("exit", new ExitCmd("exit", controller));

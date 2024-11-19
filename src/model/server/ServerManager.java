@@ -80,7 +80,7 @@ public class ServerManager {
         for (int i = 0; i < pillSet.PILLCOUNT; i++) {
             dispensePill(i + 1, pillSet.getCount(i + 1), false);
         }
-
+        startAlert();
     }
     public void dispensePillSet(String pillSetId) {
         PillSet pillSet = pillSets.getPillSet(pillSetId);
@@ -92,6 +92,9 @@ public class ServerManager {
     }
     public void adjustServo(int id, int deg) {
         sendMessage("servo " + id + " " + deg);
+    }
+    public void startAlert() {
+        sendMessage("alert");
     }
     public void executeMessage(String message) {
         executor.execute(message);
