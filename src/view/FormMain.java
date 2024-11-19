@@ -762,9 +762,9 @@ public class FormMain extends JFrame {
     }
     private Color getTimingColor2(String time) {
         switch (time) {
-            case "朝": return new Color(252, 110, 110);  // Morning red
-            case "昼": return new Color(245, 207, 130); // Noon orange
-            case "夜": return new Color(115, 92, 229);  // Night blue
+            case "朝": return new Color(252, 120, 120);  // Morning red
+            case "昼": return new Color(247, 213, 140); // Noon orange
+            case "夜": return new Color(123, 99, 237);  // Night blue
             default: return Color.GRAY;
         }
     }

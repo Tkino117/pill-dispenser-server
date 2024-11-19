@@ -4,6 +4,7 @@ import model.Model;
 import model.data.PillSet;
 import model.data.PillSets;
 import model.pilltracker.PillTracker;
+import model.stock.StockManager;
 
 import javax.swing.*;
 
@@ -13,10 +14,12 @@ public class ServerManager {
     private final PillSets pillSets;
     private final PillTracker pillTracker;
     private final MessageExecutor executor;
-    public ServerManager(int port, PillSets pillSets, PillTracker pillTracker, Model model) {
+    private final StockManager stock;
+    public ServerManager(int port, PillSets pillSets, PillTracker pillTracker, StockManager stock, Model model) {
         this.port = port;
         this.pillSets = pillSets;
         this.pillTracker = pillTracker;
+        this.stock = stock;
         executor = new MessageExecutor(model);
         server = new Server(port, this);
         Thread serverThread = new Thread(server);
@@ -55,6 +58,7 @@ public class ServerManager {
             System.out.println("Dispensing pill " + pillId + " count " + count);
         sendMessage("dispense " + pillId + " " + count);
         pillTracker.add(pillId, count);
+        stock.removeStock(pillId, count);
     }
     public void dispensePill(int pillId, int count) {
         dispensePill(pillId, count, true);

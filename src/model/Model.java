@@ -6,6 +6,7 @@ import model.data.PillSets;
 import model.history.PillHistory;
 import model.pilltracker.PillTracker;
 import model.server.ServerManager;
+import model.stock.StockManager;
 
 public class Model {
     private final Controller controller;
@@ -14,13 +15,15 @@ public class Model {
     public final ServerManager server;
     public final AlarmManager alarm;
     public final PillHistory history;
+    public final StockManager stockManager;
     public Model(int port, Controller controller) {
         System.out.println("Model created");
         this.controller = controller;
         pillSets = new PillSets();
         history = new PillHistory();
         pillTracker = new PillTracker(history, controller);
-        server = new ServerManager(port, pillSets, pillTracker, this);
+        stockManager = new StockManager(controller);
+        server = new ServerManager(port, pillSets, pillTracker, stockManager, this);
         alarm = new AlarmManager(server);
     }
     public void stop() {
