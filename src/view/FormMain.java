@@ -44,7 +44,6 @@ public class FormMain extends JFrame {
 
     // FormMainクラスにフィールドを追加
     private final Map<Integer, JLabel> stockLabels = new HashMap<>();
-    private final Map<Integer, Integer> stockAmounts = new HashMap<>();
 
     // font size
     private final Font baseFont = new Font("メイリオ", Font.BOLD, (int)(12 * 1.2));
@@ -246,7 +245,7 @@ public class FormMain extends JFrame {
         setLayout(new BorderLayout());
         setUIFont(new javax.swing.plaf.FontUIResource(baseFont));
 
-        // logo panle
+        // logo panel
         RoundedPanel logoPanel = new RoundedPanel(
                 new BorderLayout(),
                 Color.WHITE,
@@ -305,6 +304,11 @@ public class FormMain extends JFrame {
 
         setSize(1400, 850);
         setLocationRelativeTo(null);
+
+        // init label
+        for (int i = 1; i <= 3; i++) {
+            updateStockAmount(i, controller.model.stockManager.getStock(i));
+        }
     }
 
     // for demo
@@ -431,8 +435,7 @@ public class FormMain extends JFrame {
         addMedicationHistory(intake.getTime().toLocalDate(), intake.getTime().toLocalTime(), pills);
     }
     public void updateStockAmount(int pillNumber, int newAmount) {
-        // 在庫数を更新
-        stockAmounts.put(pillNumber, newAmount);
+        System.out.println("here");
 
         // UI更新
         JLabel stockLabel = stockLabels.get(pillNumber);
@@ -554,7 +557,6 @@ public class FormMain extends JFrame {
 
         // Maps に保存
         stockLabels.put(pillNumber, stockLabel);
-        stockAmounts.put(pillNumber, Integer.parseInt(amount));
 
         stockLabel.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {

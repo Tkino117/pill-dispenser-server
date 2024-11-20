@@ -24,7 +24,7 @@ public class Model {
         pillTracker = new PillTracker(history, controller);
         stockManager = new StockManager(controller);
         server = new ServerManager(port, pillSets, pillTracker, stockManager, this);
-        alarm = new AlarmManager(server);
+        alarm = new AlarmManager(server, controller);
     }
     public void stop() {
         server.stop();

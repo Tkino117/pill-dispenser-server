@@ -5,6 +5,7 @@ import model.data.PillSet;
 import model.data.PillSets;
 import model.pilltracker.PillTracker;
 import model.stock.StockManager;
+import view.View;
 
 import javax.swing.*;
 
@@ -49,7 +50,7 @@ public class ServerManager {
     public void sendMessage(String message) {
         server.sendMessage(message);
     }
-    public void dispensePill(int pillId, int count, boolean showMessage) {
+    public void dispensePill(int pillId, int count, boolean showMessage, View view) {
         if (pillId < 1 || pillId > 3) {
             System.out.println("ERROR : Invalid pill id.");
             return;
@@ -58,12 +59,12 @@ public class ServerManager {
             System.out.println("Dispensing pill " + pillId + " count " + count);
         sendMessage("dispense " + pillId + " " + count);
         pillTracker.add(pillId, count);
-        stock.removeStock(pillId, count);
+        stock.removeStock(pillId, count, view);
     }
-    public void dispensePill(int pillId, int count) {
-        dispensePill(pillId, count, true);
+    public void dispensePill(int pillId, int count, View view) {
+        dispensePill(pillId, count, true, view);
     }
-    public void dispensePillSet(PillSet pillSet) {
+    public void dispensePillSet(PillSet pillSet, View view) {
         if (!pillTracker.isEmpty()) {
             int result = JOptionPane.showConfirmDialog(
                     null,
@@ -76,19 +77,33 @@ public class ServerManager {
                 return;
             }
         }
+        for (int i = 1; i <= 3; i++) {
+            if (stock.getStock(i) < pillSet.getCount(i)) {
+                int result = JOptionPane.showConfirmDialog(
+                        null,
+                        "くすりの在庫が足りません。排出しますか？",
+                        "注意",
+                        JOptionPane.YES_NO_OPTION
+                );
+                if (result == JOptionPane.NO_OPTION) {
+                    System.out.println("dispensing canceled");
+                    return;
+                }
+            }
+        }
         System.out.println("Dispensing pill set : " + pillSet.getId());
         for (int i = 0; i < pillSet.PILLCOUNT; i++) {
-            dispensePill(i + 1, pillSet.getCount(i + 1), false);
+            dispensePill(i + 1, pillSet.getCount(i + 1), false, view);
         }
         startAlert();
     }
-    public void dispensePillSet(String pillSetId) {
+    public void dispensePillSet(String pillSetId, View view) {
         PillSet pillSet = pillSets.getPillSet(pillSetId);
         if (pillSet == null) {
             System.out.println("ERROR : Pill set not found.");
             return;
         }
-        dispensePillSet(pillSet);
+        dispensePillSet(pillSet, view);
     }
     public void adjustServo(int id, int deg) {
         sendMessage("servo " + id + " " + deg);

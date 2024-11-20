@@ -27,6 +27,9 @@ public class Controller {
         cli.execute("pillset edit afternoon 1 1");
         cli.execute("pillset add evening");
         cli.execute("pillset edit evening 1 1");
+        cli.execute("stock set 1 20");
+        cli.execute("stock set 2 15");
+        cli.execute("stock set 3 10");
         try {
             Thread.sleep(100);
         } catch (InterruptedException e) {

@@ -24,13 +24,13 @@ public class StockCmd extends Cmd {
                 id = Integer.parseInt(args.get(1));
                 count = Integer.parseInt(args.get(2));
                 if (Objects.equals(args.get(0), "set")) {
-                    controller.model.stockManager.setStock(id, count);
+                    controller.model.stockManager.setStock(id, count, controller.view);
                 }
                 else if (Objects.equals(args.get(0), "add")) {
-                    controller.model.stockManager.addStock(id, count);
+                    controller.model.stockManager.addStock(id, count, controller.view);
                 }
                 else if (Objects.equals(args.get(0), "remove") || Objects.equals(args.get(0), "rm")) {
-                    controller.model.stockManager.removeStock(id, count);
+                    controller.model.stockManager.removeStock(id, count, controller.view);
                 }
                 else {
                     err = true;

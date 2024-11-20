@@ -1,5 +1,6 @@
 package model.alarm;
 
+import controller.Controller;
 import model.data.PillSet;
 import model.server.ServerManager;
 
@@ -13,11 +14,13 @@ public class AlarmManager {
     private final ScheduledExecutorService scheduler;
     private final ConcurrentHashMap<String, ScheduledFuture<?>> tasks;
     private final ServerManager server;
+    private final Controller controller;
 
-    public AlarmManager(ServerManager server) {
+    public AlarmManager(ServerManager server, Controller controller) {
         this.scheduler = Executors.newScheduledThreadPool(1);
         this.tasks = new ConcurrentHashMap<>();
         this.server = server;
+        this.controller = controller;
     }
 
     // one time task
@@ -81,7 +84,7 @@ public class AlarmManager {
 
     public Runnable toTask(PillSet pillSet) {
         return () -> {
-            server.dispensePillSet(pillSet);
+            server.dispensePillSet(pillSet, controller.view);
         };
     }
     public boolean cancelTask(String id, boolean displayLog) {

@@ -1,6 +1,7 @@
 package model.stock;
 
 import controller.Controller;
+import view.View;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,14 +18,22 @@ public class StockManager {
             stock.put(i, defaultStock);
         }
     }
-    public void setStock(int id, int count) {
+    public void setStock(int id, int count, View view) {
         stock.put(id, count);
+        if (view != null) {
+            view.formMain.updateStockAmount(id, stock.get(id));
+        }
     }
-    public void addStock(int id, int count) {
-        stock.put(id, stock.get(id) + count);
+    public void addStock(int id, int count, View view) {
+        setStock(id, stock.get(id) + count, view);
     }
-    public void removeStock(int id, int count) {
-        stock.put(id, stock.get(id) - count);
+    public void removeStock(int id, int count, View view) {
+        if (stock.get(id) < count) {
+            System.out.println("ERROR : Not enough stock.");
+            setStock(id, 0, view);
+            return;
+        }
+        setStock(id, stock.get(id) - count, view);
     }
     public int getStock(int id) {
         return stock.get(id);
