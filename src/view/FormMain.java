@@ -42,6 +42,10 @@ public class FormMain extends JFrame {
         }
     }
 
+    // FormMainクラスにフィールドを追加
+    private final Map<Integer, JLabel> stockLabels = new HashMap<>();
+    private final Map<Integer, Integer> stockAmounts = new HashMap<>();
+
     // font size
     private final Font baseFont = new Font("メイリオ", Font.BOLD, (int)(12 * 1.2));
     private final Font titleFont = new Font("メイリオ", Font.BOLD, (int)(14 * 1.2));
@@ -174,9 +178,7 @@ public class FormMain extends JFrame {
         private void customize() {
             setFont(new Font("メイリオ", Font.BOLD, 24));
             setBorder(null);
-
-            Color bgColor = Color.WHITE;
-            setBackground(bgColor);
+            setOpaque(false);
 
             // エディタのカスタマイズ
             JSpinner.NumberEditor editor = (JSpinner.NumberEditor)getEditor();
@@ -184,10 +186,14 @@ public class FormMain extends JFrame {
             textField.setBorder(null);
             textField.setFont(getFont());
             textField.setHorizontalAlignment(JTextField.RIGHT);
-            textField.setBackground(bgColor);
+            textField.setOpaque(false);
 
             // 矢印ボタンのカスタマイズ
             replaceArrowButtons();
+
+            // エディタパネルを透過に
+            JComponent editorPane = (JComponent)getEditor();
+            editorPane.setOpaque(false);
         }
 
         private void replaceArrowButtons() {
@@ -197,7 +203,8 @@ public class FormMain extends JFrame {
                     button.setBorderPainted(false);
                     button.setContentAreaFilled(false);
                     button.setFocusPainted(false);
-                    button.setBackground(Color.WHITE);
+                    button.setBackground(new Color(0, 0, 0, 0)); // 完全透過
+                    button.setOpaque(false); // ボタンを透過に
 
                     // シンプルな矢印を描画
                     button.setUI(new BasicButtonUI() {
@@ -350,6 +357,12 @@ public class FormMain extends JFrame {
         controller.cli.execute("dispense " + timing.pillSetName);
     }
 
+    // FormMainクラスに新しいイベントハンドラメソッドを追加
+    public void onStockAmountClicked(int pillNumber) {
+        System.out.println("くすり" + pillNumber + "の在庫数がクリックされました");
+        // ここに在庫数クリック時の処理を追加
+    }
+
     private void setUIFont(javax.swing.plaf.FontUIResource f) {
         java.util.Enumeration<Object> keys = UIManager.getDefaults().keys();
         while (keys.hasMoreElements()) {
@@ -416,6 +429,16 @@ public class FormMain extends JFrame {
             pills[i.getFirst() - 1] += i.getSecond();
         }
         addMedicationHistory(intake.getTime().toLocalDate(), intake.getTime().toLocalTime(), pills);
+    }
+    public void updateStockAmount(int pillNumber, int newAmount) {
+        // 在庫数を更新
+        stockAmounts.put(pillNumber, newAmount);
+
+        // UI更新
+        JLabel stockLabel = stockLabels.get(pillNumber);
+        if (stockLabel != null) {
+            stockLabel.setText(String.valueOf(newAmount));
+        }
     }
 
     private JScrollPane createCalendarPanel() {
@@ -492,6 +515,124 @@ public class FormMain extends JFrame {
         return panel;
     }
 
+    // createInventoryPanel() 内で、個別のpillPanel作成の代わりに使用
+    private JPanel createPillStockPanel(String icon, Color iconColor, String amount, int pillNumber) {
+        JPanel pillPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0) {
+            @Override
+            public void layoutContainer(Container target) {
+                super.layoutContainer(target);
+                int maxHeight = 0;
+                for (Component comp : target.getComponents()) {
+                    maxHeight = Math.max(maxHeight, comp.getPreferredSize().height);
+                }
+
+                for (Component comp : target.getComponents()) {
+                    int y = maxHeight - comp.getPreferredSize().height;
+                    // アイコンと単位ラベルの場合は少し上にオフセット
+                    if (comp instanceof JLabel) {
+                        JLabel label = (JLabel) comp;
+                        if (label.getText().equals("個")) {
+                            y -= 4;  // 3ピクセル上に調整
+                        } else if (label.getText().matches("^[🍎🐟🌷]$")) {
+                            y -= 5;
+                        }
+                    }
+                    comp.setLocation(comp.getX(), y);
+                }
+            }
+        });
+        pillPanel.setOpaque(false);
+
+        JLabel iconLabel = new JLabel(icon);
+        iconLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 20));
+        iconLabel.setForeground(iconColor);
+
+        // 在庫数ラベルをクリック可能に
+        JLabel stockLabel = new JLabel(amount);
+        stockLabel.setFont(new Font("メイリオ", Font.BOLD, 20));
+        stockLabel.setCursor(new Cursor(Cursor.HAND_CURSOR)); // マウスカーソルを手の形に
+
+        // Maps に保存
+        stockLabels.put(pillNumber, stockLabel);
+        stockAmounts.put(pillNumber, Integer.parseInt(amount));
+
+        stockLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                onStockAmountClicked(pillNumber);
+            }
+
+            // ホバー効果を追加（オプション）
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                stockLabel.setForeground(iconColor);
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                stockLabel.setForeground(Color.BLACK);
+            }
+        });
+
+        JLabel unitLabel = new JLabel("個");
+        unitLabel.setFont(new Font("メイリオ", Font.BOLD, 13));
+
+        pillPanel.add(iconLabel);
+        pillPanel.add(Box.createHorizontalStrut(4));
+        pillPanel.add(stockLabel);
+        pillPanel.add(Box.createHorizontalStrut(2));
+        pillPanel.add(unitLabel);
+
+        return pillPanel;
+    }
+
+    private JPanel createInventoryPanel() {
+        Color panelColor = getTimingColor("在庫");
+        Color panelColor2 = getTimingColor2("在庫");
+
+        RoundedPanel outerPanel = new RoundedPanel(
+                new BorderLayout(),
+                panelColor,
+                CORNER_RADIUS,
+                true, // グラデーションを使用
+                panelColor2, // グラデーション開始色
+                panelColor    // グラデーション終了色
+        );
+        outerPanel.setBorder(BorderFactory.createEmptyBorder(7, 7, 7, 7));
+
+        JLabel titleLabel = new JLabel("在庫");
+        titleLabel.setFont(new Font("メイリオ", Font.BOLD, (int)(20)));
+        titleLabel.setForeground(Color.WHITE);
+        titleLabel.setBorder(BorderFactory.createEmptyBorder(0, 7, 7, 0));
+
+        outerPanel.add(titleLabel, BorderLayout.NORTH);
+
+        Color panelColorInner = getTimingColorInner("在庫");
+        Color panelColorInner2 = getTimingColorInner2("在庫");
+
+        RoundedPanel innerPanel = new RoundedPanel(
+                new BorderLayout(),
+                panelColor2,
+                CORNER_RADIUS,
+                true, // グラデーションを使用
+                Color.WHITE, // グラデーション開始色
+                Color.WHITE    // グラデーション終了色
+        );
+        innerPanel.setBorder(BorderFactory.createEmptyBorder(11, 11, 11, 11));
+
+        JPanel contentPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 0, 0));
+        contentPanel.setOpaque(false);
+        contentPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+
+        contentPanel.add(createPillStockPanel("🍎", new Color(224, 63, 63), "20", 1));
+        contentPanel.add(Box.createHorizontalStrut(14));
+        contentPanel.add(createPillStockPanel("🐟", new Color(45, 114, 226), "15", 2));
+        contentPanel.add(Box.createHorizontalStrut(14));
+        contentPanel.add(createPillStockPanel("🌷", new Color(232, 79, 166), "10", 3));
+
+        innerPanel.add(contentPanel, BorderLayout.CENTER);
+        outerPanel.add(innerPanel, BorderLayout.CENTER);
+
+        return outerPanel;
+    }
+
     private JPanel createTimeSlotPanel(String time, String... medications) {
         RoundedPanel borderedPanel = new RoundedPanel(
                 new BorderLayout(),
@@ -523,11 +664,16 @@ public class FormMain extends JFrame {
     }
 
     private JPanel createSettingsPanel() {
+
         // Create container panel
         JPanel containerPanel = new JPanel(new BorderLayout());
         containerPanel.setPreferredSize(new Dimension(303, 0));
         containerPanel.setBorder(BorderFactory.createEmptyBorder(0, 7, 0, 0));
         containerPanel.setOpaque(false);
+
+        // 在庫管理パネルを追加
+        JPanel inventoryPanel = createInventoryPanel();
+        containerPanel.add(inventoryPanel, BorderLayout.NORTH);
 
         // Create panel for timing settings
         JPanel settingsPanel = new JPanel();
@@ -535,6 +681,7 @@ public class FormMain extends JFrame {
         settingsPanel.setOpaque(false);
 
         // Add timing settings
+        settingsPanel.add(Box.createRigidArea(new Dimension(0, 3)));
         for (TimingType timing : TimingType.values()) {
             int p1 = controller.model.pillSets.getPillSet(timing.pillSetName).getCount(1);
             int p2 = controller.model.pillSets.getPillSet(timing.pillSetName).getCount(2);
@@ -570,7 +717,7 @@ public class FormMain extends JFrame {
         row.setOpaque(false);
 
         // アイコンとくすりラベルのコンテナ
-        JPanel iconLabelContainer = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        JPanel iconLabelContainer = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0)) ;
         iconLabelContainer.setOpaque(false);
 
         JLabel iconLabel = new JLabel(icon);
@@ -586,11 +733,11 @@ public class FormMain extends JFrame {
         row.add(Box.createHorizontalStrut(15));
 
         // スピナーと単位のコンテナ
-        JPanel spinnerUnitContainer = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
+        JPanel spinnerUnitContainer = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         spinnerUnitContainer.setOpaque(false);
 
-        JSpinner spinner = new CustomSpinner(new SpinnerNumberModel(amount, 0, 10, 1));
-        spinner.setPreferredSize(new Dimension(50, spinner.getPreferredSize().height));
+        JSpinner spinner = new CustomSpinner(new SpinnerNumberModel(amount, 0, 9, 1));
+        spinner.setPreferredSize(new Dimension(40, spinner.getPreferredSize().height));
 
         JSpinner.NumberEditor editor = (JSpinner.NumberEditor)spinner.getEditor();
         editor.getTextField().setForeground(color);
