@@ -363,8 +363,36 @@ public class FormMain extends JFrame {
 
     // FormMainクラスに新しいイベントハンドラメソッドを追加
     public void onStockAmountClicked(int pillNumber) {
-        System.out.println("くすり" + pillNumber + "の在庫数がクリックされました");
-        // ここに在庫数クリック時の処理を追加
+        String input = JOptionPane.showInputDialog(
+                this,
+                "追加する個数を入力してください",
+                "在庫追加",
+                JOptionPane.PLAIN_MESSAGE
+        );
+
+        if (input != null) {
+            try {
+                int addAmount = Integer.parseInt(input);
+                if (addAmount > 0) {
+                    controller.model.stockManager.addStock(pillNumber, addAmount, controller.view);
+                } else {
+                    JOptionPane.showMessageDialog(
+                            this,
+                            "入力値が不正です。",
+                            "エラー",
+                            JOptionPane.ERROR_MESSAGE
+                    );
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("ERROR : Invalid input");
+                JOptionPane.showMessageDialog(
+                        this,
+                        "入力値が不正です。",
+                        "エラー",
+                        JOptionPane.ERROR_MESSAGE
+                );
+            }
+        }
     }
 
     private void setUIFont(javax.swing.plaf.FontUIResource f) {
@@ -435,8 +463,6 @@ public class FormMain extends JFrame {
         addMedicationHistory(intake.getTime().toLocalDate(), intake.getTime().toLocalTime(), pills);
     }
     public void updateStockAmount(int pillNumber, int newAmount) {
-        System.out.println("here");
-
         // UI更新
         JLabel stockLabel = stockLabels.get(pillNumber);
         if (stockLabel != null) {

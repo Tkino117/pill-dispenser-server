@@ -19,6 +19,11 @@ public class StockManager {
         }
     }
     public void setStock(int id, int count, View view) {
+        if (count >= 100) {
+            System.out.println("ERROR : Stock exceeds limit.");
+            setStock(id, 99, view);
+            return;
+        }
         stock.put(id, count);
         if (view != null) {
             view.formMain.updateStockAmount(id, stock.get(id));
