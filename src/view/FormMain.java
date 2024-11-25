@@ -302,13 +302,13 @@ public class FormMain extends JFrame {
 
     // for demo
     public void demoHistory() {
-        for (int i = 11; i <= 17; i++) {
+        for (int i = 18; i <= 24; i++) {
             LocalDate date = LocalDate.of(2024, 11, i);
             LocalTime time = LocalTime.of(9, 30, 45);
             int[] amounts = {1, 1, 0}; // 薬1: 2個, 薬2: 1個, 薬3: 3個
             this.addMedicationHistory(date, time, amounts);
         }
-        LocalDate date = LocalDate.of(2024, 11, 15);
+        LocalDate date = LocalDate.of(2024, 11, 22);
         LocalTime time = LocalTime.of(12, 30, 0);
         int[] amounts = {2, 3, 4}; // 薬1: 2個, 薬2: 1個, 薬3: 3個
         this.addMedicationHistory(date, time, amounts);
@@ -419,7 +419,7 @@ public class FormMain extends JFrame {
     }
 
     private JScrollPane createCalendarPanel() {
-        LocalDate startDate = LocalDate.of(2024, 11, 10);
+        LocalDate startDate = LocalDate.of(2024, 11, 17);
         LocalDate endDate = LocalDate.of(2024, 11, 30);
         long daysBetween = java.time.temporal.ChronoUnit.DAYS.between(startDate, endDate) + 1;
 
