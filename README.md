@@ -1,6 +1,9 @@
 # Smart Pill Dispenser — Server
 
-Arduino 製の服薬ディスペンサーと通信し、スケジュール・在庫・服薬履歴を管理する Java アプリケーションです。TCP サーバーとしてデバイスと通信しつつ、同一プロセス内で CLI と Swing GUI を提供します（バックエンド兼フロントエンド）。
+Arduino 製の服薬ディスペンサーと通信し、スケジュール・在庫・服薬履歴を管理する Java アプリケーション。
+TCP サーバーとしてデバイスと通信しつつ、同一プロセス内で CLI と Swing GUI を提供する。
+
+Arduino リポジトリ：https://github.com/Tkino117/pill-dispenser-arduino
 
 ## 実行方法
 
