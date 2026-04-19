@@ -2,27 +2,6 @@
 
 Arduino 製の服薬ディスペンサーと通信し、スケジュール・在庫・服薬履歴を管理する Java アプリケーションです。TCP サーバーとしてデバイスと通信しつつ、同一プロセス内で CLI と Swing GUI を提供します（バックエンド兼フロントエンド）。
 
-## 構成
-
-MVC アーキテクチャで実装しています。
-
-```
-src/
-├── Main.java             エントリーポイント（ポート 13131 で Controller を起動）
-├── controller/
-│   ├── Controller.java   Model / View / CLI を束ねる
-│   └── cli/              CLI とコマンド群（pillset, stock, schedule, dispense など）
-├── model/
-│   ├── Model.java
-│   ├── server/           Arduino との TCP 通信
-│   ├── alarm/            服薬タイミングのアラーム管理
-│   ├── pilltracker/      服薬状態の追跡
-│   ├── stock/            薬の在庫管理
-│   ├── history/          服薬履歴の記録
-│   └── data/             薬セット（PillSet / PillSets）
-└── view/                 Swing GUI（FormMain）
-```
-
 ## 実行方法
 
 IntelliJ IDEA プロジェクト（`SmartPillDispenser.iml`）として開き、`Main` を実行してください。起動時に TCP サーバーがポート **13131** で待ち受けを開始し、CLI スレッドと GUI ウィンドウが立ち上がります。
@@ -30,9 +9,21 @@ IntelliJ IDEA プロジェクト（`SmartPillDispenser.iml`）として開き、
 ## 操作
 
 - **GUI**: メインウィンドウから在庫・スケジュール・履歴を確認・編集できます。
-- **CLI**: 標準入力からコマンドを投入します。`help` で一覧を表示します。
-  - 例: `pillset add morning`, `stock set 1 20`, `dispense morning`, `schedule ...`
+- **CLI**: 標準入力からコマンドを投入します。引数なしで実行すると現在の状態を表示するものが多いです。
 
-## Arduino との通信
+### 主要コマンド
 
-`model/server/Server.java` が TCP 接続を受け付け、`MessageExecutor` が受信メッセージを解釈して `AlarmManager` や `PillTracker` と連携します。クライアント側の実装はリポジトリ直下の `client/` を参照してください。
+| コマンド | 用途 |
+| --- | --- |
+| `pillset add <set-id>` | 薬セットを新規作成 |
+| `pillset edit <set-id> <pill-id> <count>` | 薬セットに薬 ID と個数を設定 |
+| `pillset remove <set-id>` | 薬セットを削除 |
+| `stock set/add/remove <pill-id> <count>` | 在庫の設定・増減 |
+| `dispense <set-id>` | 指定セットを今すぐ排出 |
+| `dispense <pill-id> <count>` | 単体の薬を個数指定で排出 |
+| `schedule once <sched-id> <set-id> <delay_sec>` | 一度だけ実行するスケジュール登録 |
+| `schedule repeat <sched-id> <set-id> <delay_sec> <interval_sec>` | 周期実行スケジュール登録 |
+| `schedule remove <sched-id>` | スケジュール削除 |
+| `take` | 服薬済みとして記録 |
+| `history` | 服薬履歴を表示 |
+| `restart` / `exit` (`q`) | 再起動 / 終了 |
